@@ -1,0 +1,22 @@
+{
+  "name": "fastify-hello",
+  "version": "0.1.0",
+  "description": "API Hola Mundo con Fastify - Curso de Desarrollo Web (Backend)",
+  "type": "module",
+  "scripts": {
+    "dev": "node --import tsx/esm --watch src/index.ts",
+    "start": "node --import tsx/esm src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf node_modules dist"
+  },
+  "keywords": ["fastify", "api", "curso", "backend"],
+  "license": "MIT",
+  "dependencies": {
+    "fastify": "^5.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

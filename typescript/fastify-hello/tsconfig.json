@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    /* Lenguaje y Entorno */
+    "target": "ES2024",
+    "lib": ["ES2024"],
+
+    /* Sistema de Módulos */
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    /* Salida */
+    "outDir": "./dist",
+    "rootDir": "./src",
+
+    /* Tipado Estricto — Fastify lo recomienda */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+
+    /* Interoperabilidad */
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
+    /* Source Maps para debugging */
+    "sourceMap": true,
+    "declaration": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}

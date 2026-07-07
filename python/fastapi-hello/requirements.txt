@@ -1,0 +1,7 @@
+# FastAPI - Framework web moderno para Python
+# Documentación: https://fastapi.tiangolo.com/
+fastapi>=0.115.0,<1.0.0
+
+# Uvicorn - Servidor ASGI (ejecuta la aplicación FastAPI)
+# Alternativas: hypercorn, daphne
+uvicorn[standard]>=0.30.0,<1.0.0
