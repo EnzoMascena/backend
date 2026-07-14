@@ -1,5 +1,5 @@
 /**
- * Módulo principal de la API Hola Mundo con Fastify.
+ * Módulo principal de la API Hola Mundo con Fastify + Swagger.
  *
  * Fastify es un framework web para Node.js enfocado en:
  *   - Rendimiento (hasta 2x más rápido que Express)
@@ -10,11 +10,16 @@
  *   - Logger nativo (Pino)
  *
  * Para ejecutar:
- *   $ pnpm run dev       # Desarrollo con hot-reload (tsx watch)
+ *   $ pnpm run dev       # Desarrollo con hot-reload (node --watch + tsx)
  *   $ pnpm start         # Producción
+ *
+ * Swagger UI:
+ *   Abrir http://localhost:3000/docs en el navegador.
  */
 
 import Fastify from "fastify";
+import fastifySwagger from "@fastify/swagger";
+import fastifySwaggerUi from "@fastify/swagger-ui";
 
 // ---------------------------------------------------------------------------
 // Instancia de la aplicación
@@ -26,30 +31,86 @@ const app = Fastify({
   logger: true,
 });
 
+// ===========================================================================
+// Plugins (registrados ANTES que las rutas — requisito de @fastify/swagger)
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// Plugin: @fastify/swagger — Genera la especificación OpenAPI
+// ---------------------------------------------------------------------------
+// Escanea las rutas registradas y construye la documentación OpenAPI 3.0
+// automáticamente. Si las rutas tienen definido un schema JSON, Swagger
+// lo usa para documentar parámetros, bodies, responses, etc.
+//
+// El await es necesario para que Fastify procese el plugin antes de
+// registrar las rutas. Sin await, las rutas pueden no aparecer en el spec.
+await app.register(fastifySwagger, {
+  openapi: {
+    openapi: "3.0.3",
+    info: {
+      title: "Fastify Hola Mundo",
+      description:
+        "API de ejemplo para el curso Desarrollo Web — Backend (UTN FRLP)",
+      version: "0.1.0",
+    },
+    servers: [
+      { url: "http://localhost:3000", description: "Desarrollo" },
+    ],
+  },
+});
+
+// ---------------------------------------------------------------------------
+// Plugin: @fastify/swagger-ui — Sirve la interfaz visual de Swagger
+// ---------------------------------------------------------------------------
+// Expone la documentación generada en una interfaz web interactiva.
+// Swagger UI queda disponible en http://localhost:3000/docs
+await app.register(fastifySwaggerUi, {
+  routePrefix: "/docs",
+});
+
+// ===========================================================================
+// Rutas
+// ===========================================================================
+
 // ---------------------------------------------------------------------------
 // Endpoint raíz
 // ---------------------------------------------------------------------------
-// .get() es el método para registrar una ruta GET.
-// El primer parámetro es la ruta (path).
-// El segundo es el manejador (handler), que puede ser async.
+// .get() registra una ruta GET.
+// El segundo parámetro es el objeto de configuración de la ruta (opcional).
+// El tercero es el handler.
 //
-// Fastify infiere automáticamente:
-//   - El tipo de retorno como JSON (objeto → Content-Type: application/json)
-//   - Valida automáticamente si se define un schema JSON
-//   - Serializa la respuesta con el serializador por defecto o custom
-app.get("/", async () => {
-  /**
-   * Endpoint raíz.
-   * Retorna un mensaje de bienvenida.
-   *
-   * Demuestra:
-   * - Ruta GET más simple posible
-   * - Retorno de objeto (Fastify lo serializa a JSON)
-   * - Manejo async (incluso sin operaciones async, es buena práctica
-   *   mantener consistencia para futuras modificaciones)
-   */
-  return { message: "¡Hola, mundo desde Fastify!" };
-});
+// Acá usamos el parámetro de configuración (objeto con "schema") para
+// documentar la respuesta con JSON Schema. Swagger lo va a leer y mostrar
+// en la UI.
+app.get(
+  "/",
+  {
+    schema: {
+      summary: "Mensaje de bienvenida",
+      description: "Retorna un saludo de la API",
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            message: { type: "string", description: "Mensaje de saludo" },
+          },
+        },
+      },
+    },
+  },
+  async () => {
+    /**
+     * Endpoint raíz.
+     * Retorna un mensaje de bienvenida.
+     *
+     * Demuestra:
+     * - Ruta GET más simple posible
+     * - Retorno de objeto (Fastify lo serializa a JSON)
+     * - Schema de respuesta documentado (Swagger lo refleja)
+     */
+    return { message: "¡Hola, mundo desde Fastify!" };
+  },
+);
 
 // ---------------------------------------------------------------------------
 // Endpoint de salud
@@ -57,20 +118,38 @@ app.get("/", async () => {
 // Los health checks son un estándar en APIs productivas.
 // Herramientas como Kubernetes, Docker y balanceadores de carga
 // los usan para verificar disponibilidad del servicio.
-app.get("/health", async () => {
-  /**
-   * Health check de la API.
-   * Retorna el estado del servicio.
-   *
-   * Separar monitoreo de lógica de negocio es una buena práctica
-   * de arquitectura.
-   */
-  return { status: "ok", service: "fastify-hello" };
-});
+app.get(
+  "/health",
+  {
+    schema: {
+      summary: "Health check",
+      description: "Verifica que el servicio esté operativo",
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            status: { type: "string", description: "Estado del servicio" },
+            service: { type: "string", description: "Nombre del servicio" },
+          },
+        },
+      },
+    },
+  },
+  async () => {
+    /**
+     * Health check de la API.
+     * Retorna el estado del servicio.
+     *
+     * Separar monitoreo de lógica de negocio es una buena práctica
+     * de arquitectura.
+     */
+    return { status: "ok", service: "fastify-hello" };
+  },
+);
 
-// ---------------------------------------------------------------------------
+// ===========================================================================
 // Inicio del servidor
-// ---------------------------------------------------------------------------
+// ===========================================================================
 // Envolvemos en una función async porque listen() devuelve una promesa.
 // Si usáramos await en el scope global, TypeScript en modo ESM lo permite,
 // pero hacerlo en una función async es más explícito y portable.

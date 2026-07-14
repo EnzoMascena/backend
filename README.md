@@ -1,6 +1,6 @@
-# 🎓 Desarrollo Web — Backend
+# 🎓 Desarrollo de Software — Backend
 
-> **Materia**: Desarrollo Web  
+> **Materia**: Desarrollo de Software  
 > **Carrera**: Ingeniería de Software — 4to año  
 > **Universidad**: UTN Facultad Regional La Plata
 
@@ -10,7 +10,7 @@
 
 **ESTE REPOSITORIO ES DE CARÁCTER EXCLUSIVAMENTE ACADÉMICO Y COMPLEMENTARIO.**
 
-El material aquí contenido **NO es obligatorio** para la aprobación de la materia. No hay entregas que evaluar, ni puntos que sumar, ni notas que dependan de esto.
+El material práctivo contenido en este repositorio **NO es obligatorio** para la aprobación de la materia. No hay entregas que evaluar, ni puntos que sumar, ni notas que dependan de esto.
 
 El **único objetivo** es **formar competencias profesionales** en desarrollo backend. Está pensado para aquellos estudiantes que:
 
@@ -63,11 +63,12 @@ backend/
 │
 └── typescript/
 │   └── fastify-hello/
-│       ├── src/index.ts                 # Hola Mundo + health check
+│       ├── src/index.ts                    # Hola Mundo + health check
 │       ├── package.json
 │       ├── tsconfig.json
 │       ├── .npmrc
-│       └── NOTAS_ACADEMICAS.md          # Material de estudio completo
+│       ├── NOTAS_ACADEMICAS.md             # Material de estudio completo
+│       └── GUIA_SETUP_PASO_A_PASO.md       # Setup desde cero con pnpm
 ```
 
 Cada proyecto es **autocontenido** — tiene sus propias dependencias, configuración y notas. Esto permite estudiarlos de forma independiente.
@@ -96,6 +97,8 @@ curl http://localhost:8000/health
 ```
 
 ### Fastify
+
+> ⚠️ **npm está bloqueado por el firewall Fortigate de la UTN**. Todos los ejemplos usan **pnpm**. Si es tu primera vez, seguí la **[Guía de Setup desde Cero](./typescript/fastify-hello/GUIA_SETUP_PASO_A_PASO.md)** que te lleva desde `mkdir` hasta el servidor corriendo.
 
 ```bash
 cd typescript/fastify-hello
