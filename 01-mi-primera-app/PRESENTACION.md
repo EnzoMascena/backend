@@ -33,7 +33,7 @@ style: |
     border: 1px solid #334155;
     border-radius: 8px;
     padding: 16px 20px;
-    font-size: 0.82em;
+    font-size: 0.8em;
     color: #e2e8f0;
   }
   pre code {
@@ -44,7 +44,7 @@ style: |
 
   /* ---- Tablas ---- */
   table {
-    font-size: 0.82em;
+    font-size: 0.8em;
     background: #1e293b;
     border-radius: 8px;
     overflow: hidden;
@@ -90,36 +90,49 @@ style: |
   section.lead h1 { font-size: 2.5em; }
   section.lead p { color: #64748b; }
 
+  /* ---- Checkpoint ---- */
+  section.checkpoint {
+    background-color: #052e16;
+  }
+  section.checkpoint h1 {
+    color: #34d399;
+    font-size: 2em;
+  }
+  section.checkpoint p, section.checkpoint li {
+    color: #a7f3d0;
+  }
+
   /* ---- Footer ---- */
   footer { color: #475569; font-size: 0.6em; }
-
-  /* ---- Diagrames / ASCII art ---- */
-  pre:has(code) { background: #1e293b; }
 ---
 
 <!-- _class: lead -->
 <!-- note: |
-  Bienvenidos al taller "Mi Primera APP". Este es el primer módulo práctico
-  donde van a construir una app fullstack de principio a fin.
-  El objetivo es que entiendan el ciclo HTTP completo: backend, frontend,
-  y cómo se comunican. NO es un curso de frameworks.
+  Bienvenidos al taller. Hoy NO vamos a clonar nada — construimos
+  el proyecto DESDE CERO, archivo por archivo.
+  El material de trabajo es la GUIA_ALUMNO.md que cada uno tiene
+  abierta en su navegador. Todo el código está ahí, completo.
+  La presentación les muestra el QUÉ y el POR QUÉ; la guía tiene el CÓMO.
+  Decirles: "abrí GUIA_ALUMNO.md en tu navegador y dejalo abierto".
+  Timing: 0-5 min
 -->
 
 # 🚀 Mi Primera APP
 
-## API REST + Frontend en 90 minutos
+## Construida desde cero en 90 minutos
 
 FastAPI + React + Vite
 
-Desarrollo de Software 2026 — UTN FRLP
+**Material de trabajo**: `GUIA_ALUMNO.md` (abierta en tu navegador)
 
 ---
 
+<!-- _class: lead -->
 <!-- note: |
-  Explicar que van a construir una API de Tareas (To-Do List).
-  Es un CRUD clásico: Crear, Leer, Actualizar, Eliminar.
-  El foco está en entender el protocolo HTTP, no en aprender FastAPI o React.
-  Preguntar: ¿Quién hizo alguna vez un fetch a una API? ¿Quién sabe qué es REST?
+  Explicar el objetivo: app de Tareas (CRUD).
+  El foco NO es aprender frameworks: es entender el ciclo HTTP.
+  Preguntar: ¿quién hizo alguna vez un fetch? ¿quién sabe qué es REST?
+  Timing: 5-10 min
 -->
 
 # Objetivo del Taller
@@ -134,10 +147,11 @@ Construir una app de **Tareas** con API REST y frontend web.
 ---
 
 <!-- note: |
-  Mostrar el diagrama de arquitectura. Explicar que son DOS procesos
-  independientes que se comunican por HTTP. El frontend NO sabe nada
-  del backend y viceversa. Solo se comunican por HTTP/JSON.
-  Preguntar: ¿Por qué es importante esta separación?
+  Mostrar el diagrama. Dos procesos independientes que se comunican
+  por HTTP. El frontend NO sabe del backend, y viceversa.
+  Preguntar: ¿por qué es importante esta separación?
+  (Respuesta: pueden escalar y evolucionar por separado)
+  Timing: 10-13 min
 -->
 
 # Arquitectura
@@ -153,18 +167,14 @@ Construir una app de **Tareas** con API REST y frontend web.
 
 Dos procesos independientes que se comunican por **HTTP**.
 
-El frontend hace `fetch`, el backend responde con `JSON`.
-
 ---
 
 <!-- note: |
-  Mostrar la tabla de los 4 endpoints. Explicar cada uno:
-  - GET: lee datos (no modifica nada)
-  - POST: crea un recurso nuevo
-  - PATCH: actualiza parcialmente
-  - DELETE: elimina
-  Esto es un patrón CRUD. Preguntar: ¿Cuál de estos es idempotente?
-  (GET, PATCH y DELETE son idempotentes — hacerlo 2 veces da el mismo resultado)
+  Recorrer la tabla de endpoints.
+  GET lee, POST crea, PATCH actualiza parcial, DELETE elimina.
+  Esto es CRUD. Preguntar: ¿cuál es idempotente?
+  (GET, PATCH, DELETE — hacerlos 2 veces da el mismo resultado)
+  Timing: 13-18 min
 -->
 
 # La API — 4 Operaciones
@@ -181,13 +191,11 @@ Esto es un patrón **CRUD** — Create, Read, Update, Delete.
 ---
 
 <!-- note: |
-  Esta es una pregunta que aparece mucho en entrevistas técnicas.
-  PATCH = actualización parcial (solo envío lo que cambió).
-  PUT = reemplazo completo (envío todo el recurso).
-  Ejemplo: si tengo {id:1, title:"Comprar", completed:false, created_at:"..."}
-  con PATCH solo envío {"completed": true}.
-  Con PUT tendría que enviar TODO el objeto.
-  FastAPI maneja ambos, pero para toggle, PATCH es más correcto.
+  PATCH vs PUT — pregunta clásica de entrevista.
+  PATCH: actualización parcial, envío solo lo que cambió.
+  PUT: reemplazo completo.
+  En el toggle solo cambiamos "completed" → PATCH es lo correcto.
+  Timing: 18-22 min
 -->
 
 # ¿PATCH o PUT?
@@ -228,117 +236,108 @@ Usamos **PATCH** porque solo cambiamos un campo.
 
 <!-- _class: lead -->
 <!-- note: |
-  Acá arrancamos la parte práctica. Los estudiantes van a instalar las
-  herramientas. Darles 5-10 minutos para que instalen todo.
-  Si alguien tiene problemas, resolver en paralelo.
+  Acá arranca la parte práctica. Darles 3-5 min para verificar
+  herramientas y crear la estructura de directorios.
+  Si alguien no tiene algo instalado, resolverlo en paralelo.
+  Referencia: GUIA_ALUMNO.md Parte A.
+  Timing: 22-27 min
 -->
 
-# Fase 1 — Instalación de Herramientas
+# Fase 1 — Setup
+
+Verificar herramientas + estructura de directorios
 
 ---
 
-<!-- note: |
-  Explicar cada herramienta y por qué la necesitamos.
-  Python: lenguaje del backend.
-  uv: reemplaza pip, es 100x más rápido.
-  Node.js: runtime de JavaScript para el frontend.
-  pnpm: gestor de paquetes Node (npm está bloqueado por el firewall de la UTN).
-  Dar tiempo para que instalen. Los que ya tengan algo, que verifiquen versiones.
--->
+# Verificar Herramientas
 
-# Instalación de Herramientas
-
-| Herramienta     | Para qué                  | Verificar          |
-| --------------- | ------------------------- | ------------------ |
-| **Python 3.12+**| Lenguaje del backend      | `python3 --version`|
-| **uv**          | Gestor de paquetes Python | `uv --version`     |
-| **Node.js 22**  | Runtime de JavaScript     | `node --version`   |
-| **pnpm**        | Gestor de paquetes Node   | `pnpm --version`   |
-
-Ver `README.md` para instrucciones detalladas por SO.
-
----
-
-<!-- note: |
-  uv es relativamente nuevo. Explicar que reemplaza pip+venv+pip-tools.
-  La ventaja principal es la velocidad (~100ms vs ~30s de pip).
-  Mostrar el comando de instalación para cada SO.
-  Si alguien tiene problemas con curl, puede descargar el binario directo
-  desde https://github.com/astral-sh/uv/releases
--->
-
-# uv — El gestor de paquetes Python
-
-uv reemplaza `pip`, `venv` y `pip-tools` con **un solo comando**.
+Cada comando debe responder una versión:
 
 ```bash
-# Instalar uv (Linux / macOS)
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Crear proyecto
-uv init mi-backend
-cd mi-backend
-
-# Agregar dependencias
-uv add fastapi "uvicorn[standard]"
-
-# Ejecutar
-uv run main.py
+python3 --version      # Python 3.12+
+uv --version           # gestor de paquetes Python
+node --version         # Node.js 18+
+pnpm --version         # gestor de paquetes Node
 ```
 
-**~100ms** vs los ~30s de pip 🏎️
+> **¿Falta alguna?** Avisá al docente antes de continuar.
+
+---
+
+# Estructura de Directorios
+
+```bash
+mkdir -p 01-mi-primera-app/backend
+mkdir -p 01-mi-primera-app/frontend/src
+mkdir -p 01-mi-primera-app/frontend/public
+```
+
+```
+01-mi-primera-app/
+├── backend/
+└── frontend/
+    ├── public/
+    └── src/
+```
+
+> Detalles en `GUIA_ALUMNO.md` — Parte A
 
 ---
 
 <!-- _class: lead -->
 <!-- note: |
-  Arrancamos con el backend. Los estudiantes van a crear el proyecto
-  y levantar el servidor. Darles 10 minutos para que tengan el backend
-  corriendo. Verificar que todos tengan Swagger funcionando.
+  Fase 2: el backend. Los alumnos van a crear 2 archivos
+  (pyproject.toml y main.py) copiando de la guía.
+  IMPORTANTE: darles tiempo para copiar, no apurarlos.
+  El código completo está en GUIA_ALUMNO.md Parte B.
+  Timing: 27-50 min
 -->
 
-# Fase 2 — Crear el Backend
+# Fase 2 — Backend desde cero
+
+2 archivos, ~215 líneas, 1 servidor corriendo
 
 ---
 
-<!-- note: |
-  Guíar paso a paso:
-  1. cd al directorio
-  2. uv sync (instala dependencias)
-  3. uv run main.py (levanta servidor)
-  Verificar que aparezca "Uvicorn running on http://127.0.0.1:8000"
-  Si alguien tiene error, revisar que Python 3.12+ esté instalado.
--->
+# pyproject.toml — El Manifiesto
 
-# Crear el Backend
+**Creá `backend/pyproject.toml`** — copiá de la guía Parte B.1
 
-```bash
-# Entrar al directorio
-cd 01-mi-primera-app/backend
-
-# Instalar dependencias
-uv sync
-
-# Ejecutar el servidor
-uv run main.py
+```toml
+[project]
+name = "mi-primera-app-backend"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+]
 ```
 
-El servidor arranca en `http://localhost:8000`
-
-> ⚠️ No cierres esta terminal — necesitás el servidor corriendo.
+**¿Qué es?** El manifiesto del proyecto Python. `uv` lo lee para instalar las dependencias.
 
 ---
 
-<!-- note: |
-  Explicar el concepto de Pydantic: validación automática de datos.
-  TaskCreate = lo que el cliente envía (solo título).
-  Task = lo que el servidor devuelve (con ID y metadata).
-  ¿Por qué dos modelos? Porque el cliente no debería enviar el ID
-  ni la fecha — eso lo genera el servidor.
-  Mostrar que si mandás un title vacío, Pydantic devuelve error 422.
--->
+# main.py — La API Completa
 
-# El Código — Modelos de Datos
+**Creá `backend/main.py`** — copiá de la guía Parte B.2 (~200 líneas)
+
+Estructura del archivo:
+
+| Sección | Qué hace |
+|---------|----------|
+| **Modelos Pydantic** | `TaskCreate` (entrada) y `Task` (salida) |
+| **Almacenamiento** | Lista en memoria (`tasks = []`) |
+| **Aplicación** | Instancia de `FastAPI` con título y versión |
+| **CORS** | Permite que el frontend hable con el backend |
+| **Endpoints** | GET, POST, PATCH, DELETE + health check |
+| **Main** | Arranca uvicorn con hot-reload |
+
+> **Tip**: copiá el archivo completo de la guía. No lo escribas de memoria.
+
+---
+
+# Modelos de Datos — Por qué dos
 
 ```python
 class TaskCreate(BaseModel):
@@ -353,208 +352,212 @@ class Task(BaseModel):
     created_at: str
 ```
 
-**¿Por qué dos modelos?**
-
-Separar entrada de salida es un patrón fundamental. El cliente no necesita enviar el ID — lo genera el servidor.
+Separar **entrada** de **salida** es un patrón fundamental. El cliente no necesita enviar el ID — lo genera el servidor.
 
 ---
 
+# Instalar y Ejecutar
+
+```bash
+cd 01-mi-primera-app/backend
+uv sync          # instala las dependencias
+uv run main.py   # arranca el servidor
+```
+
+Debés ver: `Uvicorn running on http://127.0.0.1:8000`
+
+> ⚠️ **No cierres esta terminal** — el servidor queda corriendo.
+
+---
+
+<!-- _class: checkpoint -->
 <!-- note: |
-  Explicar cada endpoint brevemente.
-  - @app.get: decorator que dice "este handle responde GET"
-  - status_code=201: es el código correcto para "recurso creado"
-  - find_task: busca en la lista, devuelve None si no existe
-  - raise HTTPException: FastAPI convierte esto en respuesta HTTP con error
-  Preguntar: ¿Qué pasa si hago POST dos veces con el mismo título?
-  (Se crean dos tareas — no hay uniqueness constraint)
+  CHECKPOINT 1 — el momento más importante de la fase.
+  NO avanzar hasta que TODOS tengan Swagger andando.
+  Recorrer el aula, verificar que cada uno tenga
+  localhost:8000/docs cargando.
+  Si alguien se atrasó, usar los 5-10 min para que lo resuelva.
+  Timing: ~50 min
 -->
 
-# El Código — Endpoints
+# ✅ Checkpoint 1 — Swagger
 
-```python
-@app.get("/api/tasks")
-def list_tasks():
-    return tasks
+Abrí **http://localhost:8000/docs**
 
-@app.post("/api/tasks", status_code=201)
-def create_task(body: TaskCreate):
-    task = {"id": next_id, "title": body.title, "completed": False}
-    tasks.append(task)
-    return task
+Debés ver la interfaz de Swagger con los 4 endpoints.
 
-@app.patch("/api/tasks/{task_id}")
-def toggle_task(task_id: int):
-    task = find_task(task_id)
-    task["completed"] = not task["completed"]
-    return task
-```
+**¿No aparece?** Revisá:
+- ¿La terminal muestra errores?
+- ¿Copiaste `main.py` completo?
+
+**Esperá al docente antes de avanzar.**
 
 ---
 
 <!-- _class: lead -->
 <!-- note: |
-  Acá es donde la magia de FastAPI brilla. Swagger se genera
-  automáticamente del código. Abrir http://localhost:8000/docs
-  y mostrar la interfaz interactiva. Probar cada endpoint en vivo.
+  Fase 3: verificación. La API ya está corriendo.
+  Mostrar Swagger en vivo, luego curl, luego Postman/Bruno.
+  El objetivo: que entiendan que hay MÚLTIPLES clientes
+  que pueden hablar con la misma API.
+  Referencia: GUIA_ALUMNO.md Parte C.
+  Timing: 50-60 min
 -->
 
 # Fase 3 — Verificar la API
 
+La API ya está corriendo. Probémosla con 3 clientes distintos.
+
 ---
 
-<!-- note: |
-  Tres formas de probar:
-  1. Swagger: la más visual, ideal para principiantes
-  2. Postman/Bruno: herramientas profesionales, las que usan en la industria
-  3. curl: el más básico, viene en todos los SO
-  Mostrar Swagger en vivo. Crear una tarea, listar, toggle, eliminar.
-  Preguntar: ¿Qué diferencia ven entre Swagger y Postman?
-  (Swagger es más rápido para testing rápido, Postman tiene más features
-  como collections, environments, scripts pre-request)
--->
+# Probar con Swagger y curl
 
-# Verificar la API
+**Swagger** (navegador): `http://localhost:8000/docs`
 
-Tres formas de probar que funciona:
-
-### 📖 Swagger UI
-`http://localhost:8000/docs` — Interfaz interactiva para probar cada endpoint.
-
-### 🔧 Postman / Bruno
-Herramientas externas para testing de APIs.
-
-### 💻 curl
+**curl** (terminal):
 
 ```bash
+# Crear una tarea
 curl -X POST http://localhost:8000/api/tasks \
   -H "Content-Type: application/json" \
-  -d '{"title": "Hola"}'
+  -d '{"title": "Aprender FastAPI"}'
+
+# Listar
+curl http://localhost:8000/api/tasks
 ```
+
+> La misma API responde a cualquier cliente. Swagger, curl, Postman — todos hablan HTTP.
 
 ---
 
-<!-- note: |
-  Mostrar Swagger en vivo. Hacer un recorrido por la interfaz:
-  - Los endpoints aparecen listados
-  - Click en "Try it out"
-  - Enviar request
-  - Ver la respuesta
-  Explicar que esto se genera automáticamente de los type hints y
-  Pydantic models. Sin configuración extra.
-  Probar crear, listar, toggle y eliminar.
--->
+# Probar con Postman / Bruno
 
-# Swagger UI — La Magia de FastAPI
+1. Creá una Collection "Mi Primera APP"
+2. Agregá los 4 requests
 
-Abrí `http://localhost:8000/docs` y probá:
+| Nombre | Método | URL |
+|--------|--------|-----|
+| Listar | `GET` | `/api/tasks` |
+| Crear | `POST` | `/api/tasks` |
+| Toggle | `PATCH` | `/api/tasks/1` |
+| Eliminar | `DELETE` | `/api/tasks/1` |
 
-```bash
-# Crear tarea
-POST /api/tasks
-{ "title": "Aprender FastAPI" }
-
-# Listar tareas
-GET /api/tasks
-
-# Toggle (marcar completada)
-PATCH /api/tasks/1
-
-# Eliminar
-DELETE /api/tasks/1
-```
-
-> Swagger genera la documentación automáticamente a partir del código.
+> Postman y Bruno son las herramientas que usa la industria para testear APIs.
 
 ---
 
 <!-- _class: lead -->
 <!-- note: |
-  Arrancamos con el frontend. Los estudiantes van a crear el proyecto
-  React con Vite. Darles 10 minutos para que tengan el frontend
-  corriendo. Verificar que todos vean la página de Vite.
+  Fase 4: el frontend, la más larga.
+  7 archivos, ~490 líneas, 1 servidor corriendo.
+  IMPORTANTE: avisarles que NO usan pnpm create vite —
+  escriben todos los archivos a mano, así entienden la estructura.
+  Referencia: GUIA_ALUMNO.md Parte D.
+  Timing: 60-80 min
 -->
 
-# Fase 4 — Crear el Frontend
+# Fase 4 — Frontend desde cero
+
+7 archivos, ~490 líneas, 1 servidor corriendo
 
 ---
 
-<!-- note: |
-  pnpm create vite . --template react crea el proyecto en el directorio actual.
-  Si no funciona con el punto, usar un nombre temporal y mover archivos.
-  pnpm install instala las dependencias.
-  pnpm dev levanta el dev server en :5173.
-  Verificar que todos vean "Vite + React" en el navegador.
--->
+# Los 7 Archivos del Frontend
 
-# Crear el Frontend
+**Todos se copian de la guía Parte D, en este orden:**
 
-```bash
-# Crear proyecto React con Vite
-cd 01-mi-primera-app/frontend
-pnpm create vite . --template react
+| # | Archivo | Qué es |
+|---|---------|--------|
+| 1 | `package.json` | Manifiesto del proyecto (JSON estricto) |
+| 2 | `index.html` | El único HTML — React dibuja dentro de `#root` |
+| 3 | `vite.config.js` | Configuración de Vite + proxy a :8000 |
+| 4 | `src/main.jsx` | Punto de entrada de React |
+| 5 | `src/api.js` | Comunicación con el backend (fetch) |
+| 6 | `src/App.jsx` | La UI completa |
+| 7 | `src/App.css` | Los estilos |
 
-# Instalar dependencias
-pnpm install
+> **¿Por qué a mano y no `pnpm create vite`?** Para que entiendas la estructura de verdad.
 
-# Ejecutar
-pnpm dev
+---
+
+# package.json — JSON es estricto
+
+**Creá `frontend/package.json`** — copiá de la guía Parte D.1
+
+```json
+{
+  "name": "mi-primera-app-frontend",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.4.0",
+    "vite": "^6.0.0"
+  }
+}
 ```
 
-El frontend arranca en `http://localhost:5173`
-
-> Con **ambos servidores corriendo**, abrí la app en el navegador.
+> **CUIDADO**: una coma de más o de menos en JSON rompe todo.
 
 ---
 
-<!-- note: |
-  Explicar el proxy de Vite. Es un concepto importante:
-  En desarrollo, el frontend (:5173) y backend (:8000) están en puertos
-  diferentes. Sin proxy, el navegador bloquearía los fetch por CORS.
-  El proxy redirige /api/* al backend, evitando el problema.
-  En producción NO existe el proxy — se usa nginx o similar.
-  Preguntar: ¿Qué pasaría si no tuviéramos el proxy?
-  (Error CORS en el navegador)
--->
+# index.html y vite.config.js
 
-# El Proxy de Vite
+**Creá `frontend/index.html`** y **`frontend/vite.config.js`** — guía D.2 y D.3
+
+```html
+<!-- index.html -->
+<div id="root"></div>
+<script type="module" src="/src/main.jsx"></script>
+```
 
 ```javascript
-// vite.config.js
+// vite.config.js — el proxy es CLAVE
 export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/api": {
-        target: "http://localhost:8000",
-        changeOrigin: true,
-      }
+      "/api": { target: "http://localhost:8000" }
     }
   }
 })
 ```
 
-**¿Qué hace?**
-
-Cuando el frontend hace `fetch("/api/tasks")`, Vite lo redirige a `localhost:8000/api/tasks`.
-
-El frontend no sabe que el backend está en otro puerto. Simplifica todo.
+**El proxy**: cuando el frontend hace `fetch("/api/tasks")`, Vite lo redirige a `localhost:8000`. Sin esto, el navegador bloquea la petición por CORS.
 
 ---
 
-<!-- note: |
-  Explicar la separación de responsabilidades.
-  api.js es la ÚNICA capa que habla con el backend.
-  Si mañana cambiamos la URL base, o agregamos auth, o cambiamos a axios,
-  todo se cambia en UN solo lugar.
-  El componente App.jsx no se entera — solo llama a fetchTasks(), createTask(), etc.
-  Esto es el principio DRY (Don't Repeat Yourself) y Single Responsibility.
--->
+# main.jsx — El Punto de Entrada
 
-# La Capa de Comunicación
+**Creá `frontend/src/main.jsx`** — guía D.4
+
+```jsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+```
+
+Toma el `<div id="root">` del HTML y monta la app dentro.
+
+---
+
+# api.js — La Capa de Comunicación
+
+**Creá `frontend/src/api.js`** — guía D.5
 
 ```javascript
-// api.js — Toda la comunicación con el backend
-
 const API_BASE = "/api";
 
 async function request(url, options = {}) {
@@ -574,145 +577,131 @@ export async function createTask(title) {
 }
 ```
 
-**Separación de responsabilidades**: el componente solo maneja UI, el servicio solo maneja HTTP.
+**Separación de responsabilidades**: `App.jsx` solo maneja UI; `api.js` solo habla con el backend.
 
 ---
 
-<!-- note: |
-  Repasar los conceptos clave de React para este taller.
-  useState: guarda datos que cambian (la lista de tareas).
-  useEffect: ejecuta código al montar (cargar tareas del backend).
-  JSX: HTML dentro de JavaScript.
-  Eventos: onClick, onChange, onSubmit.
-  No profundizar mucho — es un taller de 90 minutos.
-  Si preguntan por más, decir que lo veremos en módulos futuros.
--->
+# App.jsx — La UI Completa
 
-# React — Lo que necesitás saber
+**Creá `frontend/src/App.jsx`** — guía D.6 (~160 líneas)
 
-<div style="display: flex; gap: 30px; text-align: left;">
-<div>
+Los 4 conceptos de React que usás:
 
-### useState
-Guarda datos que cambian.
-Ej: la lista de tareas.
+| Concepto | Uso en la app |
+|----------|---------------|
+| `useState` | Guarda la lista de tareas y el input |
+| `useEffect` | Carga las tareas al montar la app |
+| `.map()` | Renderiza cada tarea como un elemento |
+| `.filter()` | Elimina la tarea del estado |
 
-### useEffect
-Ejecuta código al montar.
-Ej: cargar tareas al iniciar.
-
-</div>
-<div>
-
-### JSX
-HTML dentro de JavaScript.
-Lo que ves en pantalla.
-
-### Eventos
-onClick, onChange, onSubmit.
-El usuario interactúa.
-
-</div>
-</div>
+> Copiá el archivo completo de la guía.
 
 ---
 
+# App.css — Los Estilos
+
+**Creá `frontend/src/App.css`** — guía D.7
+
+```css
+.app { max-width: 600px; margin: 40px auto; }
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  background: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: #999;
+}
+```
+
+> El archivo completo tiene más clases: formulario, botones, errores, estados.
+
+---
+
+# Instalar y Ejecutar
+
+```bash
+cd 01-mi-primera-app/frontend
+pnpm install    # instala React, Vite y el plugin
+pnpm dev        # arranca el dev server
+```
+
+Debés ver: `➜ Local: http://localhost:5173/`
+
+> ⚠️ **No cierres esta terminal** — el frontend queda corriendo.
+
+---
+
+<!-- _class: checkpoint -->
 <!-- note: |
-  Este diagrama es clave para entender React.
-  El flujo es: Estado → Render → UI.
-  Cuando el estado cambia (setTasks), React re-renderiza el componente.
-  El .map() convierte el array de tareas en elementos JSX.
-  Explicar que React NO muta el estado — crea nuevos arrays.
-  setTasks([...tasks, newTask]) crea un array nuevo.
-  tasks.push(newTask) sería mutación (MAL).
+  CHECKPOINT 2 — todos deben tener la app andando en :5173.
+  Recorrer el aula, verificar que cada uno vea la interfaz con el input.
+  Si alguien tiene errores, revisar consola de pnpm dev y del navegador.
+  Los errores más comunes: typo en package.json, archivo mal ubicado.
+  Timing: ~80 min
 -->
 
-# React — El Flujo de Datos
+# ✅ Checkpoint 2 — Frontend andando
 
-```
-Componente (App.jsx)
-       │
-       ▼  useState
-  Estado (tasks[])
-       │
-       ▼  .map()
-  UI Renderizada
-```
+Abrí **http://localhost:5173**
 
-React re-renderiza cuando el estado cambia.
+Debés ver la app con el input para agregar tareas.
 
-Actualizás el estado → la UI se actualiza sola.
+**¿Aparece la página de Vite pero sin tu app?** Revisá:
+- ¿Creaste los archivos en las rutas correctas?
+- ¿La terminal de `pnpm dev` muestra errores?
+
+**Esperá al docente antes de avanzar.**
 
 ---
 
 <!-- _class: lead -->
 <!-- note: |
-  Acá verificamos que todo funcione junto. Los estudiantes deben tener
-  ambos servidores corriendo. Darles 5 minutos para probar la integración.
-  Si funciona, ¡ya tienen su primera app fullstack!
+  Fase 5: la integración — el momento más lindo.
+  Ambos servidores corriendo, la app consume la API.
+  Dar 5 min para la verificación completa.
+  Referencia: GUIA_ALUMNO.md Parte E.
+  Timing: 80-90 min
 -->
 
-# Fase 5 — Verificar la Integración
+# Fase 5 — Integración
+
+Los dos servidores trabajando juntos
 
 ---
-
-<!-- note: |
-  Guiar la verificación paso a paso:
-  1. Abrir localhost:5173
-  2. Agregar una tarea
-  3. Verificar que aparece en la lista
-  4. Marcar como completada
-  5. Eliminar
-  Si funciona, felicitarlos. Es su primera app fullstack.
-  Si no funciona, revisar: ¿está corriendo el backend?
-  ¿Está el proxy configurado? ¿Hay errores en la consola del navegador?
--->
 
 # Verificar la Integración
 
 Con ambos servidores corriendo:
 
-1. Abrí `http://localhost:5173`
-2. Escribí una tarea y hacé click en "Agregar"
-3. Verificá que aparece en la lista
-4. Marcala como completada (checkbox)
-5. Eliminala (botón ×)
+1. Escribí "Comprar leche" y click en **Agregar**
+2. La tarea aparece en la lista
+3. Marcala como completada — se tacha
+4. Eliminala con el botón ×
 
-**¿Funcionó?** ¡Felicidades! Tu primera app fullstack. 🎉
+**Bonus**: creá una tarea en Swagger y refrescá el frontend — aparece ahí.
 
----
-
-<!-- note: |
-  Cerrar con una visión general del ciclo de vida del software.
-  Lo que hicimos hoy cubre las primeras 4 fases.
-  En módulos futuros cubriremos deployment y mantenimiento.
-  La idea es que entiendan que software no es solo código —
-  es requisitos, diseño, implementación, testing, deploy, mantenimiento.
-  Un ingeniero que solo sabe codear no es un ingeniero completo.
--->
-
-# El Ciclo de Vida del Software
-
-Lo que hicimos hoy cubre las primeras 4 fases:
-
-| #  | Fase              | Qué hicimos                              |
-| -- | ----------------- | ---------------------------------------- |
-| 1  | **Requisitos**    | Definimos qué hace la app (4 endpoints)  |
-| 2  | **Diseño**        | Arquitectura client-server, modelos      |
-| 3  | **Implementación**| Escribimos el código                     |
-| 4  | **Testing**       | Swagger, Postman, curl                   |
-| 5  | Deployment        | *(Futuro)* Docker + hosting              |
-| 6  | Mantenimiento     | *(Futuro)* Features + fixes              |
+> **¿Funcionó?** Construiste una app fullstack desde cero. 🎉
 
 ---
 
-<!-- note: |
-  Dar los ejercicios para quien quiera seguir practicando.
-  Los nivel 🟢 son para reforzar lo visto en clase.
-  Los nivel 🟡 requieren investigar un poco más.
-  Los nivel 🔴 son para los más avanzados — pueden llevar días.
-  Recomendar que empiecen por los 🟢 y avancen a su ritmo.
--->
+# Cierre — El Ciclo de Vida
+
+| #  | Fase              | Qué hicimos hoy                    |
+| -- | ----------------- | ---------------------------------- |
+| 1  | **Requisitos**    | Definimos la API (4 endpoints)     |
+| 2  | **Diseño**        | Arquitectura client-server         |
+| 3  | **Implementación**| 9 archivos creados desde cero      |
+| 4  | **Testing**       | Swagger, curl, Postman, frontend   |
+| 5  | Deployment        | *(Futuro)* Docker + hosting        |
+| 6  | Mantenimiento     | *(Futuro)* Features + fixes        |
+
+> El software no es solo código: es requisitos → diseño → código → testing → deploy → mantenimiento.
+
+---
 
 # Ejercicios para Llevar a Casa
 
@@ -720,15 +709,15 @@ Lo que hicimos hoy cubre las primeras 4 fases:
 <div>
 
 ### 🟢 Comprensión
-1. Abrí Swagger y contá cuántos endpoints hay.
-2. Modificá el health check y recargá.
+1. ¿Cuántos endpoints tiene la API?
+2. Modificá el health check.
 3. Eliminá `created_at` del modelo.
 
 </div>
 <div>
 
 ### 🟡 Aplicación
-4. Agregá campo `priority` (baja/media/alta).
+4. Agregá campo `priority`.
 5. Agregá endpoint de estadísticas.
 6. Creá filtros en el frontend.
 
@@ -737,27 +726,22 @@ Lo que hicimos hoy cubre las primeras 4 fases:
 
 ### 🔴 Análisis
 7. Investigá PATCH vs PUT.
-8. Reemplazá almacenamiento en memoria por JSON.
-9. Agregá autenticación con JWT.
+8. Almacenamiento JSON en vez de memoria.
+9. Autenticación con JWT.
 
 ---
 
 <!-- _class: lead -->
 <!-- note: |
-  Cerrar la clase. Repasar lo que hicimos:
-  - Instalamos herramientas (uv, pnpm)
-  - Creamos una API REST con FastAPI
-  - Verificamos con Swagger y Postman
-  - Creamos un frontend con React
-  - Integramos ambos
-  Recordatorio: este material está en el repo. Pueden revisarlo cuando quieran.
-  Próximo módulo: profundizaremos en HTTP y arquitectura.
-  Despedida con la frase del repo.
+  Cierre. Repasar lo logrado: 9 archivos creados a mano,
+  2 servidores, 1 app funcionando.
+  Recordarles que la GUIA_ALUMNO.md y el repo quedan disponibles.
+  Próximo módulo: profundizamos HTTP y arquitectura.
 -->
 
 # 🎓 ¡Listo!
 
-Construiste tu primera app fullstack en 90 minutos.
+Construiste tu primera app fullstack **desde cero** en 90 minutos.
 
 | Backend | Frontend | Swagger |
 | ------- | -------- | ------- |

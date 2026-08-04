@@ -2,7 +2,20 @@
 
 > **Materia**: Desarrollo de Software
 > **Duración**: 90 minutos
-> **Taller guiado**: Sí — paso a paso en el aula
+> **Taller guiado**: Sí — construcción **desde cero**, archivo por archivo, sin clonar el repo
+
+---
+
+## Material del aula
+
+| Archivo | Para quién | Qué es |
+|---------|------------|--------|
+| [`GUIA_ALUMNO.md`](./GUIA_ALUMNO.md) | Alumnos | **Material de trabajo**. Código completo en orden de creación, con tiempos y checkpoints. Cada alumno la abre en su navegador y copia los archivos. |
+| [`PRESENTACION.md`](./PRESENTACION.md) | Docente | Slides Marp (fases, comandos clave, checkpoints) |
+| `README.md` | Todos | **Esta guía de referencia**. Instalación multi-OS y explicación del código. |
+| [`SPEC.md`](./SPEC.md) | Todos | Especificación completa del software |
+
+> **Flujo del aula**: los alumnos construyen el proyecto a mano siguiendo `GUIA_ALUMNO.md`. Este README queda como referencia para instalación de herramientas (Parte 1) y para entender el código (Parte 4).
 
 ---
 
@@ -47,13 +60,16 @@ Una aplicación de **Tareas (To-Do)** con 4 operaciones:
 
 ```
 01-mi-primera-app/
-├── README.md                    # Esta guía
+├── README.md                    # Esta guía de referencia
+├── GUIA_ALUMNO.md               # Material de aula — código completo desde cero
 ├── SPEC.md                      # Especificación del software
-├── PRESENTACION.md              # Presentación Marp (21 diapositivas)
+├── PRESENTACION.md              # Slides Marp (fases + checkpoints)
+├── PRESENTACION.html            # Slides exportadas (HTML)
+├── PRESENTACION.pdf             # Slides exportadas (PDF)
 │
 ├── backend/
 │   ├── pyproject.toml           # Dependencias Python (uv)
-│   └── main.py                  # API completa (~120 líneas)
+│   └── main.py                  # API completa (~200 líneas)
 │
 └── frontend/
     ├── package.json             # Dependencias Node (pnpm)
@@ -61,7 +77,7 @@ Una aplicación de **Tareas (To-Do)** con 4 operaciones:
     ├── index.html               # Entry point HTML
     └── src/
         ├── main.jsx             # Bootstrap React
-        ├── App.jsx              # Componente principal (~120 líneas)
+        ├── App.jsx              # Componente principal (~160 líneas)
         ├── App.css              # Estilos
         └── api.js               # Servicio de comunicación con la API
 ```
@@ -261,19 +277,13 @@ curl --version
 
 ## 2.1 Crear el proyecto
 
+**En el aula**: seguí `GUIA_ALUMNO.md` — Parte B. Creás `backend/pyproject.toml` y `backend/main.py` a mano, copiando el código completo. No usás `uv init`.
+
 ```bash
 cd 01-mi-primera-app/backend
 ```
 
-> **Si el proyecto ya existe** (como en este repo), saltá al paso 2.2.
-
-Si estás creando desde cero:
-
-```bash
-uv init mi-primera-app-backend
-cd mi-primera-app-backend
-uv add fastapi "uvicorn[standard]"
-```
+> **Atajo (fuera del aula)**: cuando ya sabés, `uv init` + `uv add` hacen el scaffolding en segundos.
 
 ## 2.2 Instalar dependencias
 
@@ -364,23 +374,13 @@ curl http://localhost:8000/api/health
 
 ## 3.1 Crear el proyecto
 
+**En el aula**: seguí `GUIA_ALUMNO.md` — Parte D. Creás los 7 archivos a mano (`package.json`, `index.html`, `vite.config.js`, `src/main.jsx`, `src/api.js`, `src/App.jsx`, `src/App.css`), en ese orden. No usás `pnpm create vite` — así entendés la estructura real del proyecto.
+
 ```bash
 cd 01-mi-primera-app/frontend
 ```
 
-> **Si el proyecto ya existe** (como en este repo), saltá al paso 3.2.
-
-Si estás creando desde cero:
-
-```bash
-# Crear proyecto React con Vite
-pnpm create vite . --template react
-
-# Instalar dependencias
-pnpm install
-```
-
-> **Nota**: El `.` crea el proyecto en el directorio actual. Si no funciona, usá un nombre temporal y mové los archivos.
+> **Atajo (fuera del aula)**: cuando ya sabés, `pnpm create vite . --template react` genera el esqueleto y solo modificás lo necesario.
 
 ## 3.2 Instalar dependencias
 
