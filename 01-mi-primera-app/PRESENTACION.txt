@@ -1,0 +1,308 @@
+note: |
+  Bienvenidos al taller. Hoy NO vamos a clonar nada — construimos
+  el proyecto DESDE CERO, archivo por archivo.
+  El material de trabajo es la GUIA_ALUMNO.md que cada uno tiene
+  abierta en su navegador. Todo el código está ahí, completo.
+  La presentación les muestra el QUÉ y el POR QUÉ; la guía tiene el CÓMO.
+  Decirles: "abrí GUIA_ALUMNO.md en tu navegador y dejalo abierto".
+  Timing: 0-5 min
+
+---
+
+note: |
+  Explicar el objetivo: app de Tareas (CRUD).
+  El foco NO es aprender frameworks: es entender el ciclo HTTP.
+  Preguntar: ¿quién hizo alguna vez un fetch? ¿quién sabe qué es REST?
+  Timing: 5-10 min
+
+---
+
+note: |
+  Mostrar el diagrama. Dos procesos independientes que se comunican
+  por HTTP. El frontend NO sabe del backend, y viceversa.
+  Preguntar: ¿por qué es importante esta separación?
+  (Respuesta: pueden escalar y evolucionar por separado)
+  Timing: 10-13 min
+
+---
+
+note: |
+  Recorrer la tabla de endpoints.
+  GET lee, POST crea, PATCH actualiza parcial, DELETE elimina.
+  Esto es CRUD. Preguntar: ¿cuál es idempotente?
+  (GET, PATCH, DELETE — hacerlos 2 veces da el mismo resultado)
+  Timing: 13-18 min
+
+---
+
+note: |
+  PATCH vs PUT — pregunta clásica de entrevista.
+  PATCH: actualización parcial, envío solo lo que cambió.
+  PUT: reemplazo completo.
+  En el toggle solo cambiamos "completed" → PATCH es lo correcto.
+  Timing: 18-22 min
+
+---
+
+note: |
+  Acá arranca la parte práctica. Darles 3-5 min para verificar
+  herramientas y crear la estructura de directorios.
+  Si alguien no tiene algo instalado, resolverlo en paralelo.
+  Referencia: GUIA_ALUMNO.md Parte A.
+  Timing: 22-27 min
+
+---
+
+note: |
+  Verificar herramienta por herramienta en vivo.
+  Que cada uno lea su versión en voz alta al compañero.
+  Si a alguien le falta algo, que levante la mano y lo resolvés en paralelo
+  mientras el resto sigue.
+  IMPORTANTE: acá NO hay apuro. Mejor 5 min acá que 20 de frustración después.
+  Timing: 24-27 min
+
+---
+
+note: |
+  Por qué esta estructura: separamos backend y frontend desde el día uno.
+  Son DOS proyectos independientes que se van a comunicar por HTTP.
+  Hacerlos a mano (y no con un CLI) es intencional: queremos que vean
+  que una carpeta vacía + archivos = proyecto.
+  Preguntar: ¿qué diferencia hay entre esta estructura y un monorepo?
+  Timing: 27-30 min
+
+---
+
+note: |
+  Fase 2: el backend. Los alumnos van a crear 2 archivos
+  (pyproject.toml y main.py) copiando de la guía.
+  IMPORTANTE: darles tiempo para copiar, no apurarlos.
+  El código completo está en GUIA_ALUMNO.md Parte B.
+  Timing: 27-50 min
+
+---
+
+note: |
+  El manifest declara las dependencias y uv las resuelve.
+  Comparar con el package.json que vamos a ver después: mismo concepto,
+  distinto ecosistema.
+  Aclarar que las versiones con >= permiten actualizaciones menores pero
+  no rompen la API (semver).
+  Preguntar: ¿qué pasa si dos dependencias piden versiones incompatibles?
+  (respuesta: conflicto de dependencias — eso lo resuelve uv)
+  Timing: 30-35 min
+
+---
+
+note: |
+  Recorrer las 6 secciones del archivo sin entrar en cada línea.
+  El código completo está en la guía — acá el mapa.
+  Destacar: la validación Pydantic (modelos), el CORS (por qué existe)
+  y los endpoints. Si algún alumno ya escribió el archivo, preguntarle
+  qué sección le pareció más difícil.
+  Timing: 35-40 min
+
+---
+
+note: |
+  Punto conceptual clave del taller: entrada vs salida.
+  TaskCreate = lo que el cliente manda (validado).
+  Task = lo que el servidor devuelve (id, fecha, estado).
+  El cliente NO debería poder inventar su propio id.
+  Preguntar: ¿qué pasaría si permitimos que el cliente mande el id?
+  (respuesta: colisiones, datos corruptos)
+  Timing: 40-45 min
+
+---
+
+note: |
+  Primer momento de VERDAD del taller: el servidor arranca.
+  Recorrer el aula mientras corren uv sync y uv run main.py.
+  El log de uvicorn es oro: mostrarles qué significa cada línea
+  (reloader, server process, waiting for startup).
+  Timing: 45-50 min
+
+---
+
+note: |
+  CHECKPOINT 1 — el momento más importante de la fase.
+  NO avanzar hasta que TODOS tengan Swagger andando.
+  Recorrer el aula, verificar que cada uno tenga
+  localhost:8000/docs cargando.
+  Si alguien se atrasó, usar los 5-10 min para que lo resuelva.
+  Timing: ~50 min
+
+---
+
+note: |
+  Fase 3: verificación. La API ya está corriendo.
+  Mostrar Swagger en vivo, luego curl, luego Postman.
+  En Postman: importar la collection del repo
+  (postman/mi-primera-app.postman_collection.json) — tiene 13
+  requests con tests automáticos y casos de error 422/404.
+  Si sobra tiempo, correr el Collection Runner.
+  El objetivo: que entiendan que hay MÚLTIPLES clientes
+  que pueden hablar con la misma API.
+  Referencia: GUIA_ALUMNO.md Parte C.
+  Timing: 50-60 min
+
+---
+
+note: |
+  Swagger primero (ya lo vieron en el checkpoint), después curl.
+  curl es el mismo HTTP pero sin interfaz — que vean la URL, el método
+  y el body como texto plano.
+  Escribir los 2 curl en la terminal DEL DOCENTE y que copien.
+  Timing: 52-56 min
+
+---
+
+note: |
+  La collection ya está en el repo — no la arman de cero.
+  Importar el JSON y mostrar los tests (pestaña Tests de cada request).
+  Si el aula tiene tiempo, correr el Collection Runner y ver los 13 ✓.
+  Si alguien no tiene Postman instalado, que use la versión web o Bruno.
+  Destacar: los tests son código — una API sin tests es código sin red.
+  Timing: 56-60 min
+
+---
+
+note: |
+  Fase 4: el frontend, la más larga.
+  7 archivos, ~490 líneas, 1 servidor corriendo.
+  IMPORTANTE: avisarles que NO usan pnpm create vite —
+  escriben todos los archivos a mano, así entienden la estructura.
+  Referencia: GUIA_ALUMNO.md Parte D.
+  Timing: 60-80 min
+
+---
+
+note: |
+  Presentar la fase más larga. Advertir: van a escribir 7 archivos,
+  ninguno se genera con un CLI.
+  La idea: cuando entiendas la estructura, el CLI es un atajo que ya
+  no te esconde nada.
+  Recorrer la tabla rápido — es el mapa de la fase.
+  Timing: 60-62 min
+
+---
+
+note: |
+  JSON no perdona errores de sintaxis. Es el error #1 del taller.
+  Sugerencia práctica: después de escribir package.json, mirarlo una
+  segunda vez buscando comas.
+  Mencionar que react y react-dom van en dependencies y vite/plugin en
+  devDependencies — ¿alguien sabe por qué? (respuesta: build vs runtime)
+  Timing: 62-66 min
+
+---
+
+note: |
+  El proxy es el puente invisible entre frontend y backend.
+  Explicar el ciclo: navegador pide /api/tasks a :5173 → Vite lo
+  reenvía a :8000 → backend responde → Vite lo devuelve.
+  Sin el proxy tendríamos CORS en el navegador (por eso también existe
+  el middleware en el backend).
+  Timing: 66-70 min
+
+---
+
+note: |
+  El archivo más corto y el más fácil de subestimar.
+  ReactDOM.createRoot busca el div con id="root" en el index.html
+  y monta la app ahí. Por eso el orden de archivos importa:
+  index.html primero, main.jsx después.
+  Preguntar: ¿qué pasa si el div #root no existe? (respuesta: React
+  no encuentra dónde montar y la app no renderiza)
+  Timing: 70-72 min
+
+---
+
+note: |
+  El patrón más importante del frontend: separación de responsabilidades.
+  api.js sabe CÓMO hablar con el backend; App.jsx no le importa.
+  Si mañana cambiamos la URL base o agregamos auth, se toca UN archivo.
+  Preguntar: ¿qué pasa si hacemos fetch directamente en App.jsx?
+  (respuesta: funciona, pero acoplás UI con red — a escala se vuelve un infierno)
+  Timing: 72-74 min
+
+---
+
+note: |
+  El archivo más largo: los 4 conceptos de React que usa la app.
+  useState = memoria del componente, useEffect = ciclo de vida,
+  map() = renderizar listas, filter() = eliminar.
+  No hace falta que dominen hooks — con copiar + observar alcanza hoy.
+  Timing: 74-76 min
+
+---
+
+note: |
+  La muestra es didáctica; el archivo completo tiene los estados de
+  loading y error. Que lo copien entero de la guía.
+  Comentar que la clase .completed tacha la tarea — así el toggle de
+  la API se ve en el frontend. Cerramos el ciclo.
+  Timing: 76-78 min
+
+---
+
+note: |
+  Segundo momento de verdad: el dev server de Vite.
+  Si pnpm install pregunta por build scripts (esbuild), recordar:
+  pnpm approve-builds esbuild y repetir install.
+  Recorrer el aula para el CHECKPOINT 2.
+  Timing: 78-82 min
+
+---
+
+note: |
+  CHECKPOINT 2 — todos deben tener la app andando en :5173.
+  Recorrer el aula, verificar que cada uno vea la interfaz con el input.
+  Si alguien tiene errores, revisar consola de pnpm dev y del navegador.
+  Los errores más comunes: typo en package.json, archivo mal ubicado.
+  Timing: ~80 min
+
+---
+
+note: |
+  Fase 5: la integración — el momento más lindo.
+  Ambos servidores corriendo, la app consume la API.
+  Dar 5 min para la verificación completa.
+  Referencia: GUIA_ALUMNO.md Parte E.
+  Timing: 80-90 min
+
+---
+
+note: |
+  El momento más lindo: los dos servidores hablando.
+  Que cada uno pruebe el ciclo completo: crear → completar → eliminar.
+  El bonus (crear en Swagger y verlo en el frontend) muestra el ciclo
+  HTTP en vivo — si sobra tiempo, hacerlo como demo grupal en el proyector.
+  Timing: 85-88 min
+
+---
+
+note: |
+  Cerrar el círculo conceptual: lo que hicieron hoy es el ciclo de
+  vida completo del software en miniatura.
+  La fila 4 (Testing) es la novedad: hoy probaron con 3 clientes y
+  tests automatizados.
+  Dejarles la pregunta: ¿en qué fase está hoy su proyecto favorito?
+  Timing: 88-89 min
+
+---
+
+note: |
+  Los ejercicios son opcionales pero recomendados.
+  Los niveles son acumulativos: 🟢 asegura comprensión, 🟡 práctica,
+  🔴 profundiza. El 7 (PATCH vs PUT) ya lo vimos hoy.
+  Invitarlos a traer dudas la próxima clase.
+  Timing: 89-90 min
+
+---
+
+note: |
+  Cierre. Repasar lo logrado: 9 archivos creados a mano,
+  2 servidores, 1 app funcionando.
+  Recordarles que la GUIA_ALUMNO.md y el repo quedan disponibles.
+  Próximo módulo: profundizamos HTTP y arquitectura.

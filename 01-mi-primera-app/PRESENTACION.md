@@ -15,14 +15,14 @@ style: |
   h1 { color: #f8fafc; font-size: 1.8em; }
   h2 { color: #f1f5f9; font-size: 1.4em; }
   h3 { color: #94a3b8; font-size: 1.1em; }
-  h4 { color: #60a5fa; }
+  h4 { color: #93c5fd; }
   strong { color: #f1f5f9; }
   em { color: #cbd5e1; }
-  a { color: #60a5fa; }
+  a { color: #93c5fd; }
 
   /* ---- Código ---- */
   code {
-    color: #60a5fa;
+    color: #93c5fd;
     background: #1e293b;
     padding: 2px 6px;
     border-radius: 4px;
@@ -42,6 +42,19 @@ style: |
     color: #e2e8f0;
   }
 
+  /* ---- Resaltado sintáctico (paleta clara sobre fondo oscuro) ----
+     Marp usa prettylights (tema claro) que pinta tokens en colores
+     OSCUROS sobre el fondo oscuro -> ilegible. Forzamos paleta clara. */
+  pre code :is(.hljs-keyword, .hljs-doctag, .hljs-template-tag, .hljs-template-variable, .hljs-variable.language_, .hljs-selector-tag) { color: #f472b6 !important; }
+  pre code :is(.hljs-string, .hljs-regexp, .hljs-meta .hljs-string) { color: #86efac !important; }
+  pre code :is(.hljs-title, .hljs-title.function_, .hljs-title.class_, .hljs-name, .hljs-quote, .hljs-selector-pseudo) { color: #7dd3fc !important; }
+  pre code :is(.hljs-attr, .hljs-attribute, .hljs-literal, .hljs-meta, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-id, .hljs-variable) { color: #93c5fd !important; }
+  pre code :is(.hljs-number, .hljs-symbol) { color: #fcd34d !important; }
+  pre code :is(.hljs-operator, .hljs-params, .hljs-subst, .hljs-type) { color: #cbd5e1 !important; }
+  pre code :is(.hljs-comment, .hljs-code, .hljs-formula) { color: #94a3b8 !important; font-style: italic; }
+  pre code :is(.hljs-section, .hljs-bullet) { color: #f0abfc !important; font-weight: 700; }
+  pre code .hljs-built_in { color: #fca5a5 !important; }
+
   /* ---- Tablas ---- */
   table {
     font-size: 0.8em;
@@ -53,7 +66,7 @@ style: |
   }
   thead { background: #334155; }
   th {
-    color: #60a5fa;
+    color: #93c5fd;
     padding: 10px 16px;
     text-align: left;
     border-bottom: 2px solid #3b82f6;
@@ -82,13 +95,13 @@ style: |
 
   /* ---- Listas ---- */
   ul { list-style-type: none; padding-left: 0; }
-  ul li::before { content: "▸ "; color: #60a5fa; font-weight: bold; }
+  ul li::before { content: "▸ "; color: #93c5fd; font-weight: bold; }
   ul li { color: #cbd5e1; line-height: 1.8; }
   ol li { color: #cbd5e1; line-height: 1.8; }
 
   /* ---- Lead slides ---- */
   section.lead h1 { font-size: 2.5em; }
-  section.lead p { color: #64748b; }
+  section.lead p { color: #94a3b8; }
 
   /* ---- Checkpoint ---- */
   section.checkpoint {
@@ -103,7 +116,7 @@ style: |
   }
 
   /* ---- Footer ---- */
-  footer { color: #475569; font-size: 0.6em; }
+  footer { color: #64748b; font-size: 0.6em; }
 ---
 
 <!-- _class: lead -->
@@ -249,6 +262,15 @@ Verificar herramientas + estructura de directorios
 
 ---
 
+<!-- note: |
+  Verificar herramienta por herramienta en vivo.
+  Que cada uno lea su versión en voz alta al compañero.
+  Si a alguien le falta algo, que levante la mano y lo resolvés en paralelo
+  mientras el resto sigue.
+  IMPORTANTE: acá NO hay apuro. Mejor 5 min acá que 20 de frustración después.
+  Timing: 24-27 min
+-->
+
 # Verificar Herramientas
 
 Cada comando debe responder una versión:
@@ -263,6 +285,15 @@ pnpm --version         # gestor de paquetes Node
 > **¿Falta alguna?** Avisá al docente antes de continuar.
 
 ---
+
+<!-- note: |
+  Por qué esta estructura: separamos backend y frontend desde el día uno.
+  Son DOS proyectos independientes que se van a comunicar por HTTP.
+  Hacerlos a mano (y no con un CLI) es intencional: queremos que vean
+  que una carpeta vacía + archivos = proyecto.
+  Preguntar: ¿qué diferencia hay entre esta estructura y un monorepo?
+  Timing: 27-30 min
+-->
 
 # Estructura de Directorios
 
@@ -299,6 +330,17 @@ mkdir -p 01-mi-primera-app/frontend/public
 
 ---
 
+<!-- note: |
+  El manifest declara las dependencias y uv las resuelve.
+  Comparar con el package.json que vamos a ver después: mismo concepto,
+  distinto ecosistema.
+  Aclarar que las versiones con >= permiten actualizaciones menores pero
+  no rompen la API (semver).
+  Preguntar: ¿qué pasa si dos dependencias piden versiones incompatibles?
+  (respuesta: conflicto de dependencias — eso lo resuelve uv)
+  Timing: 30-35 min
+-->
+
 # pyproject.toml — El Manifiesto
 
 **Creá `backend/pyproject.toml`** — copiá de la guía Parte B.1
@@ -317,6 +359,15 @@ dependencies = [
 **¿Qué es?** El manifiesto del proyecto Python. `uv` lo lee para instalar las dependencias.
 
 ---
+
+<!-- note: |
+  Recorrer las 6 secciones del archivo sin entrar en cada línea.
+  El código completo está en la guía — acá el mapa.
+  Destacar: la validación Pydantic (modelos), el CORS (por qué existe)
+  y los endpoints. Si algún alumno ya escribió el archivo, preguntarle
+  qué sección le pareció más difícil.
+  Timing: 35-40 min
+-->
 
 # main.py — La API Completa
 
@@ -337,6 +388,16 @@ Estructura del archivo:
 
 ---
 
+<!-- note: |
+  Punto conceptual clave del taller: entrada vs salida.
+  TaskCreate = lo que el cliente manda (validado).
+  Task = lo que el servidor devuelve (id, fecha, estado).
+  El cliente NO debería poder inventar su propio id.
+  Preguntar: ¿qué pasaría si permitimos que el cliente mande el id?
+  (respuesta: colisiones, datos corruptos)
+  Timing: 40-45 min
+-->
+
 # Modelos de Datos — Por qué dos
 
 ```python
@@ -355,6 +416,14 @@ class Task(BaseModel):
 Separar **entrada** de **salida** es un patrón fundamental. El cliente no necesita enviar el ID — lo genera el servidor.
 
 ---
+
+<!-- note: |
+  Primer momento de VERDAD del taller: el servidor arranca.
+  Recorrer el aula mientras corren uv sync y uv run main.py.
+  El log de uvicorn es oro: mostrarles qué significa cada línea
+  (reloader, server process, waiting for startup).
+  Timing: 45-50 min
+-->
 
 # Instalar y Ejecutar
 
@@ -397,7 +466,11 @@ Debés ver la interfaz de Swagger con los 4 endpoints.
 <!-- _class: lead -->
 <!-- note: |
   Fase 3: verificación. La API ya está corriendo.
-  Mostrar Swagger en vivo, luego curl, luego Postman/Bruno.
+  Mostrar Swagger en vivo, luego curl, luego Postman.
+  En Postman: importar la collection del repo
+  (postman/mi-primera-app.postman_collection.json) — tiene 13
+  requests con tests automáticos y casos de error 422/404.
+  Si sobra tiempo, correr el Collection Runner.
   El objetivo: que entiendan que hay MÚLTIPLES clientes
   que pueden hablar con la misma API.
   Referencia: GUIA_ALUMNO.md Parte C.
@@ -409,6 +482,14 @@ Debés ver la interfaz de Swagger con los 4 endpoints.
 La API ya está corriendo. Probémosla con 3 clientes distintos.
 
 ---
+
+<!-- note: |
+  Swagger primero (ya lo vieron en el checkpoint), después curl.
+  curl es el mismo HTTP pero sin interfaz — que vean la URL, el método
+  y el body como texto plano.
+  Escribir los 2 curl en la terminal DEL DOCENTE y que copien.
+  Timing: 52-56 min
+-->
 
 # Probar con Swagger y curl
 
@@ -430,19 +511,31 @@ curl http://localhost:8000/api/tasks
 
 ---
 
-# Probar con Postman / Bruno
+<!-- note: |
+  La collection ya está en el repo — no la arman de cero.
+  Importar el JSON y mostrar los tests (pestaña Tests de cada request).
+  Si el aula tiene tiempo, correr el Collection Runner y ver los 13 ✓.
+  Si alguien no tiene Postman instalado, que use la versión web o Bruno.
+  Destacar: los tests son código — una API sin tests es código sin red.
+  Timing: 56-60 min
+-->
 
-1. Creá una Collection "Mi Primera APP"
-2. Agregá los 4 requests
+# Probar con Postman
+
+**Collection lista con tests** — importá `postman/mi-primera-app.postman_collection.json`:
+
+1. Postman → **Import** → seleccioná el archivo
+2. Aparece "Mi Primera APP - Backend (tests)" con 13 requests
+3. Ejecutá uno por uno, o **Run** (Collection Runner) para correr todo con aserciones
 
 | Nombre | Método | URL |
 |--------|--------|-----|
-| Listar | `GET` | `/api/tasks` |
-| Crear | `POST` | `/api/tasks` |
-| Toggle | `PATCH` | `/api/tasks/1` |
-| Eliminar | `DELETE` | `/api/tasks/1` |
+| Listar | `GET` | `http://localhost:8000/api/tasks` |
+| Crear | `POST` | `http://localhost:8000/api/tasks` |
+| Toggle | `PATCH` | `http://localhost:8000/api/tasks/{{task_id}}` |
+| Eliminar | `DELETE` | `http://localhost:8000/api/tasks/{{task_id}}` |
 
-> Postman y Bruno son las herramientas que usa la industria para testear APIs.
+> Los 13 requests tienen tests automáticos (✓/✗) y verifican errores 422 y 404. Postman y Bruno son las herramientas que usa la industria para testear APIs.
 
 ---
 
@@ -462,6 +555,15 @@ curl http://localhost:8000/api/tasks
 
 ---
 
+<!-- note: |
+  Presentar la fase más larga. Advertir: van a escribir 7 archivos,
+  ninguno se genera con un CLI.
+  La idea: cuando entiendas la estructura, el CLI es un atajo que ya
+  no te esconde nada.
+  Recorrer la tabla rápido — es el mapa de la fase.
+  Timing: 60-62 min
+-->
+
 # Los 7 Archivos del Frontend
 
 **Todos se copian de la guía Parte D, en este orden:**
@@ -479,6 +581,15 @@ curl http://localhost:8000/api/tasks
 > **¿Por qué a mano y no `pnpm create vite`?** Para que entiendas la estructura de verdad.
 
 ---
+
+<!-- note: |
+  JSON no perdona errores de sintaxis. Es el error #1 del taller.
+  Sugerencia práctica: después de escribir package.json, mirarlo una
+  segunda vez buscando comas.
+  Mencionar que react y react-dom van en dependencies y vite/plugin en
+  devDependencies — ¿alguien sabe por qué? (respuesta: build vs runtime)
+  Timing: 62-66 min
+-->
 
 # package.json — JSON es estricto
 
@@ -507,6 +618,15 @@ curl http://localhost:8000/api/tasks
 
 ---
 
+<!-- note: |
+  El proxy es el puente invisible entre frontend y backend.
+  Explicar el ciclo: navegador pide /api/tasks a :5173 → Vite lo
+  reenvía a :8000 → backend responde → Vite lo devuelve.
+  Sin el proxy tendríamos CORS en el navegador (por eso también existe
+  el middleware en el backend).
+  Timing: 66-70 min
+-->
+
 # index.html y vite.config.js
 
 **Creá `frontend/index.html`** y **`frontend/vite.config.js`** — guía D.2 y D.3
@@ -533,6 +653,16 @@ export default defineConfig({
 
 ---
 
+<!-- note: |
+  El archivo más corto y el más fácil de subestimar.
+  ReactDOM.createRoot busca el div con id="root" en el index.html
+  y monta la app ahí. Por eso el orden de archivos importa:
+  index.html primero, main.jsx después.
+  Preguntar: ¿qué pasa si el div #root no existe? (respuesta: React
+  no encuentra dónde montar y la app no renderiza)
+  Timing: 70-72 min
+-->
+
 # main.jsx — El Punto de Entrada
 
 **Creá `frontend/src/main.jsx`** — guía D.4
@@ -552,6 +682,15 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 Toma el `<div id="root">` del HTML y monta la app dentro.
 
 ---
+
+<!-- note: |
+  El patrón más importante del frontend: separación de responsabilidades.
+  api.js sabe CÓMO hablar con el backend; App.jsx no le importa.
+  Si mañana cambiamos la URL base o agregamos auth, se toca UN archivo.
+  Preguntar: ¿qué pasa si hacemos fetch directamente en App.jsx?
+  (respuesta: funciona, pero acoplás UI con red — a escala se vuelve un infierno)
+  Timing: 72-74 min
+-->
 
 # api.js — La Capa de Comunicación
 
@@ -581,6 +720,14 @@ export async function createTask(title) {
 
 ---
 
+<!-- note: |
+  El archivo más largo: los 4 conceptos de React que usa la app.
+  useState = memoria del componente, useEffect = ciclo de vida,
+  map() = renderizar listas, filter() = eliminar.
+  No hace falta que dominen hooks — con copiar + observar alcanza hoy.
+  Timing: 74-76 min
+-->
+
 # App.jsx — La UI Completa
 
 **Creá `frontend/src/App.jsx`** — guía D.6 (~160 líneas)
@@ -597,6 +744,14 @@ Los 4 conceptos de React que usás:
 > Copiá el archivo completo de la guía.
 
 ---
+
+<!-- note: |
+  La muestra es didáctica; el archivo completo tiene los estados de
+  loading y error. Que lo copien entero de la guía.
+  Comentar que la clase .completed tacha la tarea — así el toggle de
+  la API se ve en el frontend. Cerramos el ciclo.
+  Timing: 76-78 min
+-->
 
 # App.css — Los Estilos
 
@@ -620,6 +775,14 @@ Los 4 conceptos de React que usás:
 > El archivo completo tiene más clases: formulario, botones, errores, estados.
 
 ---
+
+<!-- note: |
+  Segundo momento de verdad: el dev server de Vite.
+  Si pnpm install pregunta por build scripts (esbuild), recordar:
+  pnpm approve-builds esbuild y repetir install.
+  Recorrer el aula para el CHECKPOINT 2.
+  Timing: 78-82 min
+-->
 
 # Instalar y Ejecutar
 
@@ -673,6 +836,14 @@ Los dos servidores trabajando juntos
 
 ---
 
+<!-- note: |
+  El momento más lindo: los dos servidores hablando.
+  Que cada uno pruebe el ciclo completo: crear → completar → eliminar.
+  El bonus (crear en Swagger y verlo en el frontend) muestra el ciclo
+  HTTP en vivo — si sobra tiempo, hacerlo como demo grupal en el proyector.
+  Timing: 85-88 min
+-->
+
 # Verificar la Integración
 
 Con ambos servidores corriendo:
@@ -682,11 +853,20 @@ Con ambos servidores corriendo:
 3. Marcala como completada — se tacha
 4. Eliminala con el botón ×
 
-**Bonus**: creá una tarea en Swagger y refrescá el frontend — aparece ahí.
+**Bonus**: creá una tarea en Swagger (o en Postman) y refrescá el frontend — aparece ahí.
 
 > **¿Funcionó?** Construiste una app fullstack desde cero. 🎉
 
 ---
+
+<!-- note: |
+  Cerrar el círculo conceptual: lo que hicieron hoy es el ciclo de
+  vida completo del software en miniatura.
+  La fila 4 (Testing) es la novedad: hoy probaron con 3 clientes y
+  tests automatizados.
+  Dejarles la pregunta: ¿en qué fase está hoy su proyecto favorito?
+  Timing: 88-89 min
+-->
 
 # Cierre — El Ciclo de Vida
 
@@ -702,6 +882,14 @@ Con ambos servidores corriendo:
 > El software no es solo código: es requisitos → diseño → código → testing → deploy → mantenimiento.
 
 ---
+
+<!-- note: |
+  Los ejercicios son opcionales pero recomendados.
+  Los niveles son acumulativos: 🟢 asegura comprensión, 🟡 práctica,
+  🔴 profundiza. El 7 (PATCH vs PUT) ya lo vimos hoy.
+  Invitarlos a traer dudas la próxima clase.
+  Timing: 89-90 min
+-->
 
 # Ejercicios para Llevar a Casa
 
