@@ -27,12 +27,13 @@ El **único objetivo** es **formar competencias profesionales** en desarrollo ba
 | # | Módulo | Estado | Contenido |
 |---|--------|--------|-----------|
 | 00 | [Introducción](./00-introduccion/) | ✅ | FastAPI y Fastify — Hola Mundo, Swagger, conceptos fundamentales |
+| 01 | [Mi Primera APP](./01-mi-primera-app/) | ✅ | Taller guiado: API de Tareas + Frontend React en 90 minutos |
 
 ---
 
 ## Roadmap
 
-- [ ] Laboratorios de HTTP raw con `curl`
+- [x] ~~Laboratorios de HTTP raw con `curl`~~ (incluido en módulo 01)
 - [ ] Servidor HTTP desde cero (sin frameworks)
 - [ ] Arquitectura en capas completa (Controller → Service → Repository)
 - [ ] Persistencia con PostgreSQL (migraciones, queries, conexiones)
