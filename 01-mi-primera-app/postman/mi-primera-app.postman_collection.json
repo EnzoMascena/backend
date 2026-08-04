@@ -1,0 +1,373 @@
+{
+  "info": {
+    "name": "Mi Primera APP - Backend (tests)",
+    "description": "Casos de prueba para la API del Módulo 01 (FastAPI + uv). Backend en http://localhost:8000\n\nFlujo Feliz: 7 requests que cubren el CRUD completo.\nCasos limite: 6 requests que validan errores 422 y 404.\n\nPara correr todo de una: Collection Runner (boton Run).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Flujo Feliz",
+      "item": [
+        {
+          "name": "1. Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8000/api/health",
+            "description": "El endpoint de infraestructura. Deberia responder status ok."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Service OK\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.status).to.eql(\"ok\");",
+                  "  pm.expect(body.service).to.eql(\"mi-primera-app-backend\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Listar tareas (inicial)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks",
+            "description": "GET /api/tasks. Con la lista limpia devuelve [] (array vacio)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve un array\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(Array.isArray(body)).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Crear tarea valida",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Aprender HTTP con FastAPI\"\n}"
+            },
+            "url": "http://localhost:8000/api/tasks",
+            "description": "POST /api/tasks con titulo valido. Guarda el id devuelto en la variable {{task_id}} para los tests siguientes."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201 (Created)\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Crea la tarea correctamente\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.title).to.eql(\"Aprender HTTP con FastAPI\");",
+                  "  pm.expect(body.completed).to.eql(false);",
+                  "  pm.expect(body.id).to.be.a(\"number\");",
+                  "});",
+                  "pm.variables.set(\"task_id\", pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. Toggle tarea (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks/{{task_id}}",
+            "description": "PATCH /api/tasks/{id} sin body: invierte el estado completed (toggle)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Toggle a completed=true\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.id).to.eql(Number(pm.variables.get(\"task_id\")));",
+                  "  pm.expect(body.completed).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5. Listar tareas (verificar)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks",
+            "description": "GET /api/tasks despues del POST + PATCH. La lista debe tener 1 tarea completada."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"La tarea esta en la lista\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.length).to.be.at.least(1);",
+                  "  const task = body.find(t => t.id === Number(pm.variables.get(\"task_id\")));",
+                  "  pm.expect(task, \"task_id no encontrado en la lista\").to.exist;",
+                  "  pm.expect(task.completed).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. Eliminar tarea (DELETE)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks/{{task_id}}",
+            "description": "DELETE /api/tasks/{id}. Deberia responder {\"ok\": true}."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Respuesta ok\", () => {",
+                  "  pm.expect(pm.response.json().ok).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "7. Listar tareas (final)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks",
+            "description": "GET /api/tasks al final del flujo. La tarea creada ya no debe existir."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"La tarea fue eliminada\", () => {",
+                  "  const body = pm.response.json();",
+                  "  const task = body.find(t => t.id === Number(pm.variables.get(\"task_id\")));",
+                  "  pm.expect(task, \"la tarea no deberia existir\").to.not.exist;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Casos limite (errores)",
+      "item": [
+        {
+          "name": "8. POST sin body",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": "http://localhost:8000/api/tasks",
+            "description": "POST sin body -> FastAPI/Pydantic devuelve 422 (Validation Error)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422 (Validation Error)\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"Error tipo missing\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.detail[0].type).to.eql(\"missing\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "9. POST con titulo vacio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"\"\n}"
+            },
+            "url": "http://localhost:8000/api/tasks",
+            "description": "POST con titulo vacio -> 422 por min_length=1 (Field: string_too_short)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"Error de longitud minima\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.detail[0].type).to.eql(\"string_too_short\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10. POST titulo de 201 caracteres",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n}"
+            },
+            "url": "http://localhost:8000/api/tasks",
+            "description": "POST con titulo de 201 chars -> 422 por max_length=200 (string_too_long)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"Error de longitud maxima\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.detail[0].type).to.eql(\"string_too_long\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11. POST sin Content-Type",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"sin content type\"\n}"
+            },
+            "url": "http://localhost:8000/api/tasks",
+            "description": "POST sin header Content-Type: application/json -> FastAPI no puede parsear el body -> 422."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "12. PATCH tarea inexistente",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks/999",
+            "description": "PATCH a una tarea que no existe -> 404 con detail 'Tarea 999 no encontrada'."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404 (Not Found)\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Mensaje de error\", () => {",
+                  "  pm.expect(pm.response.json().detail).to.include(\"no encontrada\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13. DELETE tarea inexistente",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks/999",
+            "description": "DELETE a una tarea que no existe -> 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Mensaje de error\", () => {",
+                  "  pm.expect(pm.response.json().detail).to.include(\"no encontrada\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
