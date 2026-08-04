@@ -23,7 +23,7 @@ Ejemplo mínimo de API REST con FastAPI, documentación Swagger automática y he
 
 ```bash
 # 1. Entrar al directorio
-cd python/fastapi-hello
+cd 00-introduccion/python/fastapi-hello
 
 # 2. (Recomendado) Crear y activar virtualenv
 python -m venv .venv

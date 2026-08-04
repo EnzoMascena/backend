@@ -134,10 +134,10 @@ Ahora sí, creamos todo desde `mkdir`.
 
 ```bash
 # Crear la carpeta del proyecto
-mkdir -p ~/Documentos/desa_soft_2026/backend/typescript/fastify-hello
+mkdir -p ~/Documentos/desa_soft_2026/backend/00-introduccion/typescript/fastify-hello
 
 # Entrar al proyecto
-cd ~/Documentos/desa_soft_2026/backend/typescript/fastify-hello
+cd ~/Documentos/desa_soft_2026/backend/00-introduccion/typescript/fastify-hello
 
 # Crear carpeta para el código fuente
 mkdir src

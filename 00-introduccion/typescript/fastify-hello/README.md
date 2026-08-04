@@ -20,7 +20,7 @@ Ejemplo mínimo de API REST con Fastify, schemas JSON, documentación Swagger au
 
 ```bash
 # 1. Entrar al directorio
-cd typescript/fastify-hello
+cd 00-introduccion/typescript/fastify-hello
 
 # 2. Instalar dependencias
 pnpm install
