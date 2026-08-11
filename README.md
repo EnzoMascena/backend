@@ -28,18 +28,21 @@ El **único objetivo** es **formar competencias profesionales** en desarrollo ba
 |---|--------|--------|-----------|
 | 00 | [Introducción](./00-introduccion/) | ✅ | FastAPI y Fastify — Hola Mundo, Swagger, conceptos fundamentales |
 | 01 | [Mi Primera APP](./01-mi-primera-app/) | ✅ | Taller guiado: API de Tareas + Frontend React en 90 minutos |
+| 02 | [Persistencia con PostgreSQL](./02-persistencia-postgresql/) | ✅ | Datos que sobreviven: psycopg + pool, SQL básico, Docker demo + Supabase. Frontend del 01 reutilizado sin cambios |
 
 ---
 
 ## Roadmap
 
 - [x] ~~Laboratorios de HTTP raw con `curl`~~ (incluido en módulo 01)
+- [x] ~~Persistencia con PostgreSQL~~ (módulo 02: conexión, pool, SQL CRUD, schema)
 - [ ] Servidor HTTP desde cero (sin frameworks)
 - [ ] Arquitectura en capas completa (Controller → Service → Repository)
-- [ ] Persistencia con PostgreSQL (migraciones, queries, conexiones)
+- [ ] Migraciones formales con Alembic
 - [ ] Autenticación JWT + RBAC
 - [ ] Testing automatizado (unitario + integración)
-- [ ] Dockerización y CI/CD
+- [ ] Dockerización y CI/CD (módulo 02 solo usa Docker para el postgres de la demo)
+- [ ] Frontend con TypeScript (React-TS con `pnpm create vite --template react-ts`)
 - [ ] Proyecto integrador: API de Gestión de Proyectos y Tareas
 
 ---
