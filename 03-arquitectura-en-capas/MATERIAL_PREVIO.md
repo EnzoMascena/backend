@@ -42,6 +42,12 @@ regla de negocio, necesitás levantar el servidor entero.
 > responsabilidades). Cada parte del sistema debería ocuparse de UNA sola
 > cosa, y hacerla bien.
 
+### 📚 Para profundizar en este tema
+
+- 📖 **Robert C. Martin — *Clean Architecture***: fundamenta por qué mezclar responsabilidades te condena. El [artículo introductorio](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) resume la idea en 10 minutos.
+- 🔗 **[Separation of Concerns](https://en.wikipedia.org/wiki/Separation_of_concerns)** — el principio formal detrás de "cada parte hace una sola cosa".
+- 🎬 **Uncle Bob (Robert C. Martin)** — sus charlas sobre arquitectura están en el canal de [NDC Conferences](https://www.youtube.com/@NDC). Buscá *"Clean Architecture"*.
+
 ---
 
 ## 2. La solución: capas
@@ -71,6 +77,12 @@ repository. Si cambiás el framework HTTP, solo tocás el controller.
 > 🧠 **Inversión de Control (IoC)**: cada capa recibe lo que necesita **desde
 > afuera** (se lo "inyectan"), no lo construye ella misma. En FastAPI eso se
 > hace con `Depends()`.
+
+### 📚 Para profundizar en este tema
+
+- 📖 **Robert C. Martin — *Clean Architecture***: la "regla de dependencia" que estás viendo acá (una capa solo conoce a la de abajo) es el corazón del libro.
+- 🔗 **[FastAPI — Dependencies](https://fastapi.tiangolo.com/tutorial/dependencies/)** — la inyección de dependencias (`Depends`) que conecta las capas en FastAPI.
+- 🎬 **ArjanCodes — [canal](https://www.youtube.com/@ArjanCodes)**: arquitectura de software en Python con ejemplos prácticos. Buscá *"dependency injection"* y *"clean architecture"*.
 
 ---
 
@@ -109,6 +121,12 @@ el SQL que hay debajo es lo que te hace **usar el ORM bien** y no a ciegas.
 El ORM es una herramienta, no magia: si no sabés qué SQL genera, vas a tener
 problemas de performance y no vas a saber por qué.
 
+### 📚 Para profundizar en este tema
+
+- 🔗 **[SQLAlchemy 2.0 — Documentación](https://docs.sqlalchemy.org/en/20/)** — el ORM que está debajo de SQLModel. El tutorial oficial cubre el patrón `select()`.
+- 🔗 **[psycopg — Documentación](https://www.psycopg.org/psycopg3/docs/)** — el driver que usaste en el Módulo 02. El ORM genera SQL que este driver ejecuta por vos.
+- 🎬 **ArjanCodes — [canal](https://www.youtube.com/@ArjanCodes)**: videos sobre ORMs y SQLAlchemy en Python, explicando el SQL que generan por debajo.
+
 ---
 
 ## 4. SQLModel en 3 minutos
@@ -143,6 +161,11 @@ class TaskRead(TaskBase):        # lo que devuelve la API
 Fijate que **ya no existe `schema.sql`**: el ORM genera la tabla desde la
 clase. `SQLModel.metadata.create_all(engine)` crea las tablas al arrancar.
 
+### 📚 Para profundizar en este tema
+
+- 🔗 **[SQLModel — Documentación](https://sqlmodel.tiangolo.com/)** — la doc oficial del ORM que usamos hoy. El [tutorial](https://sqlmodel.tiangolo.com/tutorial/) cubre exactamente lo que vas a construir.
+- 🎬 **tiangolo (Sebastián Ramírez)** — creador de FastAPI y SQLModel. Sus charlas están en el canal de [PyCon US](https://www.youtube.com/@PyConUS). Buscá *"FastAPI"*.
+
 ---
 
 ## 5. TypeScript: el frontend deja de adivinar
@@ -171,6 +194,13 @@ compila** y te lo dice en el editor. Eso es seguridad que JavaScript no te da.
 > 🧠 La lección: el contrato de la API vive en **dos lugares** — el schema
 > Pydantic (backend) y las interfaces TypeScript (frontend). Tienen que
 > coincidir, y ahora ambos lados están tipados.
+
+### 📚 Para profundizar en este tema
+
+- 📖 **Dan Vanderkam — *Effective TypeScript***: 62 consejos para usar TypeScript bien, no solo "que compile".
+- 🔗 **[TypeScript Handbook](https://www.typescriptlang.org/docs/)** — la referencia oficial del lenguaje.
+- 🔗 **[React + TypeScript](https://react.dev/learn/typescript)** — cómo tipar componentes React (lo que usamos en el frontend).
+- 🎬 **Matt Pocock — [canal](https://www.youtube.com/@mattpocockuk)**: el referente de TypeScript en YouTube. Tutoriales claros y directos.
 
 ---
 
