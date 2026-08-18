@@ -283,130 +283,17 @@ con el flujo feliz + casos límite, y preparate para responder en voz alta:
 
 ---
 
-## Anexo — Solución de referencia (solo si te trabaste)
+## 🔐 La solución
 
-> 🚨 **Usala después de intentarlo.** Si la mirás antes, no aprendés nada.
-
-### `task_repository.py`
-
-```python
-from sqlmodel import Session, select
-from app.models.task import Task, TaskUpdate
-
-
-class TaskRepository:
-    def __init__(self, session: Session):
-        self.session = session
-
-    def list_all(self) -> list[Task]:
-        statement = select(Task).order_by(Task.id)
-        return list(self.session.exec(statement).all())
-
-    def get_by_id(self, task_id: int) -> Task | None:
-        return self.session.get(Task, task_id)
-
-    def create(self, title: str) -> Task:
-        task = Task(title=title)
-        self.session.add(task)
-        self.session.commit()
-        self.session.refresh(task)
-        return task
-
-    def update(self, task: Task, data: TaskUpdate) -> Task:
-        changes = data.model_dump(exclude_unset=True)
-        for field, value in changes.items():
-            setattr(task, field, value)
-        self.session.add(task)
-        self.session.commit()
-        self.session.refresh(task)
-        return task
-
-    def delete(self, task: Task) -> None:
-        self.session.delete(task)
-        self.session.commit()
-
-    def count(self) -> int:
-        statement = select(Task)
-        return len(self.session.exec(statement).all())
-```
-
-### `task_service.py`
-
-```python
-from app.models.task import Task, TaskCreate, TaskUpdate
-from app.repositories.task_repository import TaskRepository
-
-
-class TaskService:
-    def __init__(self, repository: TaskRepository):
-        self.repository = repository
-
-    def list_tasks(self) -> list[Task]:
-        return self.repository.list_all()
-
-    def get_task(self, task_id: int) -> Task | None:
-        return self.repository.get_by_id(task_id)
-
-    def create_task(self, body: TaskCreate) -> Task:
-        return self.repository.create(body.title.strip())
-
-    def update_task(self, task_id: int, body: TaskUpdate) -> Task | None:
-        task = self.repository.get_by_id(task_id)
-        if task is None:
-            return None
-        return self.repository.update(task, body)
-
-    def delete_task(self, task_id: int) -> bool:
-        task = self.repository.get_by_id(task_id)
-        if task is None:
-            return False
-        self.repository.delete(task)
-        return True
-
-    def count_tasks(self) -> int:
-        return self.repository.count()
-```
-
-### `task_controller.py`
-
-```python
-from fastapi import APIRouter, Depends, HTTPException, status
-from app.dependencies import get_task_service
-from app.models.task import TaskCreate, TaskRead, TaskUpdate
-from app.services.task_service import TaskService
-
-router = APIRouter(prefix="/api/tasks", tags=["tasks"])
-
-
-@router.get("", response_model=list[TaskRead])
-def list_tasks(service: TaskService = Depends(get_task_service)):
-    return service.list_tasks()
-
-
-@router.get("/{task_id}", response_model=TaskRead)
-def get_task(task_id: int, service: TaskService = Depends(get_task_service)):
-    task = service.get_task(task_id)
-    if task is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Tarea {task_id} no encontrada")
-    return task
-
-
-@router.post("", response_model=TaskRead, status_code=status.HTTP_201_CREATED)
-def create_task(body: TaskCreate, service: TaskService = Depends(get_task_service)):
-    return service.create_task(body)
-
-
-@router.patch("/{task_id}", response_model=TaskRead)
-def update_task(task_id: int, body: TaskUpdate, service: TaskService = Depends(get_task_service)):
-    task = service.update_task(task_id, body)
-    if task is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Tarea {task_id} no encontrada")
-    return task
-
-
-@router.delete("/{task_id}")
-def delete_task(task_id: int, service: TaskService = Depends(get_task_service)):
-    if not service.delete_task(task_id):
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Tarea {task_id} no encontrada")
-    return {"ok": True}
-```
+> La solución completa **NO está en este repo**. El docente la libera al
+> final de la clase en la rama `solucion`. Cuando se anuncie, hacé:
+>
+> ```bash
+> git fetch origin
+> git diff main..origin/solucion
+> ```
+>
+> Y compará tu código con la solución.
+>
+> **La gracia del taller está en descubrirlo vos.** Si la solución estuviera
+> acá desde el principio, no aprenderías nada.

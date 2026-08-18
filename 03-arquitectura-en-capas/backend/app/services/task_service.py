@@ -1,13 +1,13 @@
 """
 Capa de negocio (Service) — la lógica de la aplicación.
 
-El service orquesta: recibe pedidos "en lenguaje de negocio", aplica
-reglas y delega el acceso a datos en el repository.
+COMPLETÁ los métodos marcados con TODO. El service delega el acceso a
+datos en el repository y aplica las reglas de negocio.
 
-Una regla importante que se ve acá: el service NO devuelve errores
-HTTP. Si una tarea no existe, devuelve `None` (o `False`). Es el
-CONTROLLER (la capa de arriba) quien decide cómo comunicarlo al
-cliente (404). El service no sabe qué es un status code.
+LA DECISIÓN CLAVE DE HOY:
+    Cuando la tarea no existe, el service devuelve `None` (o `False`).
+    NO lanza un error 404. ¿Por qué? Porque 404 es HTTP, y el service
+    NO sabe qué es HTTP. El controller (la capa de arriba) lo traduce.
 """
 
 from app.models.task import Task, TaskCreate, TaskUpdate
@@ -18,34 +18,28 @@ class TaskService:
     """Casos de uso de la entidad Task."""
 
     def __init__(self, repository: TaskRepository):
-        # Recibe su repository por el constructor (inyección de
-        # dependencias). No lo crea: se lo dan desde afuera.
         self.repository = repository
 
     def list_tasks(self) -> list[Task]:
-        return self.repository.list_all()
+        raise NotImplementedError("TODO: implementar list_tasks")
 
     def get_task(self, task_id: int) -> Task | None:
-        return self.repository.get_by_id(task_id)
+        raise NotImplementedError("TODO: implementar get_task")
 
     def create_task(self, body: TaskCreate) -> Task:
-        # Regla de negocio: normalizamos el título (sin espacios en los
-        # bordes). Esto en el Módulo 02 estaba dentro del endpoint.
-        title = body.title.strip()
-        return self.repository.create(title)
+        # Pista: normalizá el título con .strip() antes de crear.
+        # Esa es una REGLA DE NEGOCIO, por eso vive acá (no en el controller).
+        raise NotImplementedError("TODO: implementar create_task")
 
     def update_task(self, task_id: int, body: TaskUpdate) -> Task | None:
-        task = self.repository.get_by_id(task_id)
-        if task is None:
-            return None  # el controller decidirá que es un 404
-        return self.repository.update(task, body)
+        # Pista: si no existe, devolvé None. Si existe, actualizá.
+        raise NotImplementedError("TODO: implementar update_task")
 
     def delete_task(self, task_id: int) -> bool:
-        task = self.repository.get_by_id(task_id)
-        if task is None:
-            return False
-        self.repository.delete(task)
-        return True
+        # Pista: devolvé True si existía y se borró, False si no.
+        raise NotImplementedError("TODO: implementar delete_task")
 
     def count_tasks(self) -> int:
+        # EJEMPLO resuelto — el health check usa este método.
+        # Mirá cómo delega en el repository: así se hace en TODOS los métodos.
         return self.repository.count()
