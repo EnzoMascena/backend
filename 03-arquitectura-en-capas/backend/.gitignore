@@ -1,0 +1,9 @@
+# Entorno virtual de Python (uv)
+.venv/
+
+# Caché de Python
+__pycache__/
+
+# Credenciales — NUNCA commitear el .env
+# El .env tiene la contraseña de tu base de datos.
+.env

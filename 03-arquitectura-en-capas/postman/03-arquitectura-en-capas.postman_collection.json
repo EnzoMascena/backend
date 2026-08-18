@@ -1,0 +1,421 @@
+{
+  "info": {
+    "name": "03 - Arquitectura en Capas - Backend (tests)",
+    "description": "Casos de prueba para la API del Módulo 03 (FastAPI + SQLModel + 3 capas). Backend en http://localhost:8000\n\nFlujo Feliz: 8 requests que cubren el CRUD COMPLETO (incluye GET by id y edicion de titulo, nuevos vs Modulo 02).\nCasos limite: 7 requests que validan errores 422 y 404.\n\nDIFERENCIA CLAVE vs Modulo 02: la misma API, pero organizada en capas (Controller -> Service -> Repository) con ORM. El contrato JSON es el mismo.\n\nPara correr todo de una: Collection Runner (boton Run).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Flujo Feliz",
+      "item": [
+        {
+          "name": "1. Health check (verifica BBDD a traves de las capas)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8000/api/health",
+            "description": "GET /api/health. El health pasa por el controller -> service -> repository. El count() del repository hace el SELECT COUNT. Si responde, toda la cadena de capas funciona."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"BBDD conectada\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.status).to.eql(\"Funciona\");",
+                  "  pm.expect(body.db).to.eql(\"conectada\");",
+                  "  pm.expect(typeof body.tasks_count).to.eql(\"number\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Listar tareas (inicial)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks",
+            "description": "GET /api/tasks. Con la tabla vacia devuelve []. La respuesta es IDENTICA a la del Modulo 02: mismo JSON, mismos campos. El contrato no cambio, solo cambio la estructura interna del backend."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Devuelve un array\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(Array.isArray(body)).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Crear tarea valida",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"  Aprender capas  \"\n}"
+            },
+            "url": "http://localhost:8000/api/tasks",
+            "description": "POST /api/tasks. Nota los espacios en el title: el SERVICE le aplica strip() y lo normaliza. Eso es una regla de negocio que ahora vive en la capa service (antes estaba en el endpoint). El id se guarda en {{task_id}}."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Estructura de tarea\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property(\"id\");",
+                  "  pm.expect(body).to.have.property(\"title\");",
+                  "  pm.expect(body).to.have.property(\"completed\");",
+                  "  pm.expect(body).to.have.property(\"created_at\");",
+                  "  pm.expect(body.completed).to.be.false;",
+                  "});",
+                  "pm.test(\"Title normalizado (strip del service)\", () => {",
+                  "  pm.expect(pm.response.json().title).to.eql(\"Aprender capas\");",
+                  "});",
+                  "pm.test(\"Guardar id en variable\", () => {",
+                  "  pm.collectionVariables.set(\"task_id\", pm.response.json().id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. Listar con datos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks",
+            "description": "GET /api/tasks. La tarea creada en el paso 3 aparece. Viene de PostgreSQL via el ORM (select(Task)), no de una lista en memoria."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Hay al menos 1 tarea\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.length).to.be.at.least(1);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5. GET por id (nuevo vs Modulo 02)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks/{{task_id}}",
+            "description": "GET /api/tasks/{id}. NUEVO en este modulo: leer UNA tarea. El repository usa session.get(Task, id). El controller recibe None si no existe y lo traduce a 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Es la tarea creada\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.title).to.eql(\"Aprender capas\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. PATCH completed (toggle)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"completed\": true\n}"
+            },
+            "url": "http://localhost:8000/api/tasks/{{task_id}}",
+            "description": "PATCH /api/tasks/{id} con solo completed. Actualizacion PARCIAL: el repository usa model_dump(exclude_unset=True) y solo toca el campo enviado (el title queda intacto)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Quedo completada\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.completed).to.be.true;",
+                  "  pm.expect(body.title).to.eql(\"Aprender capas\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "7. PATCH title (editar - nuevo vs Modulo 02)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Aprender capas y ORM\"\n}"
+            },
+            "url": "http://localhost:8000/api/tasks/{{task_id}}",
+            "description": "PATCH /api/tasks/{id} con solo title. Actualizacion parcial: cambia el titulo SIN pisar el estado completed (que quedo true del paso 6). NUEVO vs Modulo 02, que solo tenia toggle."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Title editado y completed intacto\", () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.title).to.eql(\"Aprender capas y ORM\");",
+                  "  pm.expect(body.completed).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "8. Eliminar tarea",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks/{{task_id}}",
+            "description": "DELETE /api/tasks/{id}. El service devuelve True si existia, False si no. El controller traduce True -> { ok: true } y False -> 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Respuesta ok\", () => {",
+                  "  pm.expect(pm.response.json().ok).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Casos limite",
+      "item": [
+        {
+          "name": "1. Titulo vacio -> 422",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"\"\n}"
+            },
+            "url": "http://localhost:8000/api/tasks",
+            "description": "El modelo TaskCreate (SQLModel/Pydantic) valida min_length=1. Mismo 422 que el Modulo 02."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Titulo de 201 caracteres -> 422",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\"\n}"
+            },
+            "url": "http://localhost:8000/api/tasks",
+            "description": "max_length=200 en TaskBase. Mismo 422 string_too_long."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"Error string_too_long\", () => {",
+                  "  pm.expect(pm.response.json().detail[0].type).to.eql(\"string_too_long\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Sin body -> 422",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": { "mode": "raw", "raw": "" },
+            "url": "http://localhost:8000/api/tasks",
+            "description": "POST sin body: falta title. 422 missing."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. Title no string -> 422",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": 123\n}"
+            },
+            "url": "http://localhost:8000/api/tasks",
+            "description": "title numerico: 422 string_type."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"Error string_type\", () => {",
+                  "  pm.expect(pm.response.json().detail[0].type).to.eql(\"string_type\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5. GET id inexistente -> 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks/999999",
+            "description": "GET de un id que no existe: el service devuelve None, el CONTROLLER lo traduce a 404. NUEVO endpoint en este modulo."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Detail no encontrada\", () => {",
+                  "  pm.expect(pm.response.json().detail).to.include(\"no encontrada\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. PATCH id inexistente -> 404",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"completed\": true\n}"
+            },
+            "url": "http://localhost:8000/api/tasks/999999",
+            "description": "PATCH de id inexistente: service -> None, controller -> 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "7. DELETE id inexistente -> 404",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "http://localhost:8000/api/tasks/999999",
+            "description": "DELETE de id inexistente: service devuelve False, controller -> 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"Detail no encontrada\", () => {",
+                  "  pm.expect(pm.response.json().detail).to.include(\"no encontrada\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
