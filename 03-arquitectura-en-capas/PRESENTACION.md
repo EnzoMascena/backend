@@ -367,6 +367,30 @@ tasks = session.exec(statement).all()
 
 ---
 
+<!-- note: |
+  Explicar el flujo de trabajo antes del setup.
+  Cada alumno trabaja en SU fork (su copia). La solución NO está en el repo —
+  se libera al final de la clase en la rama solucion.
+  Timing: actividad 0-1 min (transición)
+-->
+
+## El flujo: fork → clonar → desarrollar
+
+1. **Fork** — en GitHub, creás tu copia del repo.
+2. **Clonar** — bajás TU fork a tu máquina.
+3. **Desarrollar** — completás las 3 capas siguiendo la guía.
+4. **Verificar** — Postman + frontend, todo contra TU backend.
+
+```bash
+git clone https://github.com/TU_USUARIO/backend.git
+cd backend/03-arquitectura-en-capas
+```
+
+> Cada uno trabaja en **su fork**. La solución se libera al final de la clase
+> (rama `solucion`) para que compares tu código.
+
+---
+
 <!-- _class: fase -->
 <!-- note: |
   Fase 0. Guiar el setup. Verificar que todos tengan el server arriba.
