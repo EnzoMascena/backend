@@ -1,100 +1,118 @@
-# Módulo 03 — Arquitectura en Capas + ORM + TypeScript
+# 🚀 Módulo 03 — Arquitectura en Capas + ORM + TypeScript
 
-> **Materia**: Desarrollo de Software
-> **Duración**: 60 minutos (taller por grupos, aula invertida)
-> **Metodología**: descubrimiento guiado — los alumnos construyen, el docente pregunta
-
----
-
-## Material del aula
-
-| Archivo | Para quién | Qué es |
-|---------|------------|--------|
-| [`MATERIAL_PREVIO.md`](./MATERIAL_PREVIO.md) | Alumnos | **Lectura pre-clase** (aula invertida): capas, ORM, SQLModel, TypeScript |
-| [`GUIA_DOCENTE.md`](./GUIA_DOCENTE.md) | Docente | **Conducción** del taller: timeline, checkpoints, desbloqueo |
-| [`GUIA_ALUMNO.md`](./GUIA_ALUMNO.md) | Alumnos | **Actividad por grupos**: scaffold + consignas + solución de referencia |
-| [`PRESENTACION.md`](./PRESENTACION.md) | Docente | **Guía paso a paso** proyectada (slides Marp) |
-| [`SPEC.md`](./SPEC.md) | Todos | Especificación completa del software |
-| [`postman/`](./postman/) | Todos | Collection con tests (flujo feliz + casos límite) |
-
-> **Flujo del aula**: los alumnos leyeron `MATERIAL_PREVIO` en casa. En clase
-> reciben el scaffold y completan tres archivos por descubrimiento, guiados por
-> `GUIA_ALUMNO.md`. El docente conduce con `GUIA_DOCENTE.md` y proyecta
-> `PRESENTACION.md`.
+> **Empezá acá.** Este documento te dice qué es este módulo, cómo arrancar y
+> dónde está cada cosa. Después seguí con `GUIA_ALUMNO.md`.
 
 ---
 
-## Objetivo del Taller
+## ¿De qué se trata?
 
-Refactorizar la API de Tareas del Módulo 02 en **tres capas** con
-responsabilidades separadas, reemplazar el SQL crudo por un **ORM**
-(SQLModel) y migrar el frontend a **TypeScript**.
+En el Módulo 02 escribiste la API de tareas con **SQL crudo** dentro de un
+`main.py` monolítico. Hoy vas a **reorganizarla**:
 
-| | Módulo 02 | Módulo 03 |
-|---|---|---|
-| Estructura | `main.py` monolítico (~300 líneas) | 3 capas separadas |
-| Acceso a datos | SQL crudo (psycopg) | **ORM (SQLModel)** |
-| Esquema | `schema.sql` manual | Generado por el modelo (`create_all`) |
-| CRUD | 4 endpoints + toggle | **CRUD completo** (+GET by id, +editar título) |
-| Frontend | JavaScript | **TypeScript** |
-| Contrato de API | — | Mismos campos, `created_at` ISO 8601 |
+- **3 capas** → Controller (HTTP) → Service (negocio) → Repository (ORM)
+- **ORM (SQLModel)** → en lugar de escribir SQL a mano
+- **Frontend TypeScript** → el contrato de la API, como tipos
+
+Vas a **descubrir y desarrollar** el taller en tu propio **fork**, sin que te
+den la solución servida.
 
 ---
 
-## Arquitectura
+## Cómo empezar (fork → clonar → desarrollar)
 
-```
-Frontend (TS) ── HTTP/JSON ──► Controller ──► Service ──► Repository ──► PostgreSQL
-  :5173                         (FastAPI)     (negocio)     (SQLModel)     (Docker/Supabase)
-  tipos = contrato               HTTP          reglas        ORM
+### 1. Hacé un fork del repositorio
+
+En GitHub, andá al repo de la materia y clickeá **Fork**. Esto te crea una
+**copia propia** del repo, donde vas a trabajar sin miedo a romper nada.
+
+### 2. Cloná TU fork
+
+```bash
+git clone https://github.com/TU_USUARIO/backend.git
+cd backend/03-arquitectura-en-capas
 ```
 
-**Regla de dependencia**: cada capa solo conoce a la de abajo.
+### 3. Leé el material previo (si no lo hiciste)
+
+Abrí [`MATERIAL_PREVIO.md`](./MATERIAL_PREVIO.md). Ahí están los conceptos
+(capas, ORM, SQLModel, TypeScript) + la **bibliografía y videos** de cada tema.
+Sin esto, el taller va a ser cuesta arriba.
+
+### 4. Entendé qué vas a construir
+
+Leé [`SPEC.md`](./SPEC.md) — es tu **recurso de aprendizaje**: qué construís,
+por qué, y qué vas a descubrir en el camino.
+
+### 5. Desarrollá el backend (las 3 capas)
+
+Seguí [`GUIA_ALUMNO.md`](./GUIA_ALUMNO.md). Completás **3 archivos**:
+
+| Archivo | Capa |
+|---------|------|
+| `backend/app/repositories/task_repository.py` | Repository (ORM) |
+| `backend/app/services/task_service.py` | Service (negocio) |
+| `backend/app/controllers/task_controller.py` | Controller (HTTP) |
+
+### 6. Conectá el frontend TypeScript
+
+El frontend ya viene **completo** (`frontend/`). Solo lo levantás y verificás
+que haga el CRUD contra tu backend.
+
+### 7. Verificá con Postman
+
+Importá la collection de `postman/` y corré el flujo feliz + casos límite.
+
+---
+
+## Qué está completo y qué tenés que completar
+
+| Componente | Estado |
+|-----------|--------|
+| `backend/app/models/task.py` | ✅ Dado (el modelo SQLModel) |
+| `backend/app/database.py` | ✅ Dado (engine + session) |
+| `backend/app/dependencies.py` | ✅ Dado (el cableado) |
+| `backend/app/main.py` | ✅ Dado (el entrypoint) |
+| `backend/app/controllers/health_controller.py` | ✅ Dado (**ejemplo vivo** de controller) |
+| `backend/app/repositories/task_repository.py` | 🔓 **Completás vos** |
+| `backend/app/services/task_service.py` | 🔓 **Completás vos** |
+| `backend/app/controllers/task_controller.py` | 🔓 **Completás vos** |
+| `frontend/` | ✅ Dado (completo, se explora) |
+
+---
+
+## Estructura del repo
 
 ```
-app/
-├── main.py                    # entrypoint: app + routers + lifespan
-├── database.py                # engine + session + create_all
-├── dependencies.py            # inyección de dependencias (Depends)
-├── models/task.py             # SQLModel: Task, TaskCreate, TaskUpdate, TaskRead
-├── repositories/task_repository.py   # ORM: select, get, add, update, delete
-├── services/task_service.py          # reglas de negocio (strip, "no existe")
-└── controllers/
-    ├── task_controller.py     # endpoints /api/tasks (el 404 vive acá)
-    └── health_controller.py   # /api/health
+03-arquitectura-en-capas/
+├── README.md            # este archivo — empezá acá
+├── SPEC.md              # recurso de aprendizaje (qué + por qué)
+├── MATERIAL_PREVIO.md   # lectura pre-clase + referencias por tema
+├── GUIA_ALUMNO.md       # guía de descubrimiento paso a paso
+├── PRESENTACION.md/html/pdf  # (material del docente)
+├── backend/
+│   ├── app/             # las 3 capas (3 archivos para completar)
+│   ├── pyproject.toml   # dependencias (uv)
+│   └── .env.example     # plantilla de configuración
+├── frontend/            # React + Vite + TypeScript (dado)
+└── postman/             # collection con tests
 ```
 
 ---
 
-## Endpoints (CRUD completo)
-
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| `GET` | `/api/health` | Health check (consulta la base) |
-| `GET` | `/api/tasks` | Listar tareas |
-| `POST` | `/api/tasks` | Crear tarea |
-| `GET` | `/api/tasks/{id}` | Leer UNA tarea |
-| `PATCH` | `/api/tasks/{id}` | Actualizar título y/o estado |
-| `DELETE` | `/api/tasks/{id}` | Eliminar tarea |
-
----
-
-## Instalación
-
-### Backend
+## Levantar el backend
 
 ```bash
 cd backend
-cp .env.example .env        # completá DATABASE_URL (podés reusar la del Módulo 02)
-uv sync
+cp .env.example .env        # completá DATABASE_URL (reusás la del módulo 02)
+uv sync                     # instala dependencias
 uv run -m app.main          # http://localhost:8000
 ```
 
-> **La tabla se crea sola** al arrancar (`SQLModel.metadata.create_all`). Ya no
-> hay `schema.sql`. Si reutilizás la base del Módulo 02, la tabla `tasks` ya
-> existe y el ORM la mapea tal cual (es idempotente).
+> La tabla `tasks` se crea sola al arrancar (`create_all`). Si reutilizás la
+> base del módulo 02, la tabla ya existe y el ORM la mapea tal cual.
 
-### Frontend
+## Levantar el frontend
 
 ```bash
 cd frontend
@@ -104,70 +122,10 @@ pnpm dev                    # http://localhost:5173 (proxy → :8000)
 
 ---
 
-## Entendiendo el código: la lección en una tabla
+## Regla de oro del taller
 
-| Responsabilidad | Módulo 02 (monolito) | Módulo 03 (capas) |
-|-----------------|---------------------|-------------------|
-| Validación | Pydantic en el endpoint | `models/task.py` |
-| SQL | dentro de los endpoints | `repositories/task_repository.py` |
-| Regla de negocio (`strip`, "no existe") | dentro de los endpoints | `services/task_service.py` |
-| HTTP (rutas, 404, status codes) | mezclado | `controllers/task_controller.py` |
-| Conexión | `pool` arriba del main | `database.py` |
-| Cableado | implícito | `dependencies.py` |
+> **No busques la solución. Descubrila.** Cuando te trabes, preguntate:
+> *"¿esto es HTTP, es negocio, o es datos?"*. Esa pregunta destraba el 90% de
+> las dudas.
 
-**El `404` vive en el controller** (es HTTP). El service devuelve `Task | None`
-(o `bool`) y no conoce los status codes. **El `strip()` vive en el service**
-(es negocio). **El SQL vive en el repository** (vía ORM).
-
----
-
-## Diferencias clave vs Módulo 02
-
-| Aspecto | Módulo 02 | Módulo 03 |
-|---------|-----------|-----------|
-| Consulta de todas | `cur.execute("SELECT ... FROM tasks")` | `session.exec(select(Task).order_by(Task.id))` |
-| Leer por id | `WHERE id = %s` | `session.get(Task, id)` |
-| Crear | `INSERT ... RETURNING` | `session.add(task)` + `commit` |
-| Actualizar | `UPDATE ... SET completed = NOT completed` | `setattr` + `commit` (parcial) |
-| Serializar fecha | `serialize_task()` manual | SQLModel/Pydantic automático |
-| Esquema | `schema.sql` a mano | `create_all` desde el modelo |
-
----
-
-## Ejercicios para Llevar a Casa
-
-### Nivel 🟢 Comprensión
-
-1. Explicá la regla de dependencia entre capas con tus palabras.
-2. ¿Por qué el service no puede devolver un `404`? ¿Dónde vive y por qué?
-3. ¿Qué SQL que escribías a mano en el Módulo 02 ahora escribe el ORM?
-
-### Nivel 🟡 Aplicación
-
-4. Agregá `GET /api/tasks?completed=true` (filtro) end-to-end: repository →
-   service → controller → frontend.
-5. Agregá un campo `priority` al modelo SQLModel. ¿Qué cambia en el `create_all`
-   si la tabla ya existe? (investigá por qué NO se agrega la columna).
-6. En el frontend, agregá un botón "filtrar completadas" usando el tipo `Task`.
-
-### Nivel 🔴 Análisis
-
-7. ¿Qué harías para que el service lance una excepción de dominio
-   (`TaskNotFoundError`) en vez de devolver `None`? ¿Dónde la traducirías a 404?
-   Investigá `app.add_exception_handler`.
-8. El ORM genera SQL por vos. Activá `echo=True` en el `create_engine` y mirá
-   qué SQL se ejecuta. ¿Lo reconocés del Módulo 02?
-9. Investigá qué son las **migraciones** (Alembic) y por qué `create_all` no
-   alcanza cuando el esquema cambia en producción.
-
----
-
-## Referencias
-
-- [SQLModel — Documentación](https://sqlmodel.tiangolo.com/)
-- [SQLAlchemy 2.0 — Documentación](https://docs.sqlalchemy.org/en/20/)
-- [FastAPI — Dependencias](https://fastapi.tiangolo.com/tutorial/dependencies/)
-- [FastAPI — SQLModel](https://fastapi.tiangolo.com/tutorial/sql-databases/)
-- [TypeScript — Documentación](https://www.typescriptlang.org/docs/)
-- [React + TypeScript](https://react.dev/learn/typescript)
-- [Vite — Documentación](https://vite.dev/)
+*"La Universidad te da el mapa. El recorrido lo hacés vos."*

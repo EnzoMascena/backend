@@ -1,4 +1,4 @@
-# 👥 Guía del Alumno — Arquitectura en Capas + ORM (taller por grupos)
+# Guía del Alumno — Arquitectura en Capas + ORM (taller por grupos)
 
 > **Módulo 03 — Desarrollo de Software 2026**
 > **Modalidad**: taller por grupos con descubrimiento. **60 minutos.**
@@ -8,7 +8,7 @@
 
 ## Cómo funciona este taller
 
-1. El docente te entrega un **scaffold** (el esqueleto) ya funcionando.
+1. Tu **fork** ya trae el **esqueleto** del backend (todo lo demás viene hecho).
 2. Tu grupo completa **tres archivos** siguiendo las consignas.
 3. Después de cada fase, **verificás** que funcione antes de avanzar.
 4. Si te trabás: preguntale al docente. Pero él no te da la respuesta — te
@@ -20,7 +20,7 @@ la doc o en el código del Módulo 02).
 
 ---
 
-## Qué te entregan (scaffold — NO se modifica)
+## Qué ya viene hecho en tu fork (NO se modifica)
 
 ```
 03-arquitectura-en-capas/backend/

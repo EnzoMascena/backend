@@ -1,59 +1,114 @@
-# SPEC — Módulo 03: Arquitectura en Capas + ORM + TypeScript
+# 📘 SPEC — Módulo 03: Arquitectura en Capas + ORM
 
-> **Versión**: 1.0.0
-> **Estado**: ✅ Implementado y probado
-> **Depende de**: Módulo 02 (persistencia con PostgreSQL) y Módulo 01 (contrato de la API)
+> **Este documento es TU recurso de aprendizaje.**
+> No es un contrato frío: es el mapa de lo que vas a construir, **por qué** lo
+> construimos así, y **qué vas a descubrir** en el camino. Leelo antes de
+> tocar código, y volvé a él cuando te trabes.
 
 ---
 
-## 1. Propósito
+## 1. Qué vas a construir
 
-Refactorizar la API de Tareas del Módulo 02 en **tres capas** con responsabilidades separadas (Controller → Service → Repository), reemplazar el SQL crudo de psycopg por un **ORM** (SQLModel) y migrar el frontend de JavaScript a **TypeScript**.
+La **misma API de Tareas** de los módulos 01 y 02, pero **reorganizada**:
 
-El **contrato de la API se mantiene** en sus operaciones existentes y se **extiende** a un CRUD completo (se agrega lectura individual y actualización del título).
+- En **3 capas** con responsabilidades separadas (Controller → Service → Repository)
+- Con un **ORM** (SQLModel) en lugar del SQL crudo que escribiste en el 02
+- Con un **frontend TypeScript** que refleja el contrato como tipos
 
-## 2. Alcance
+Y lo más importante: **el contrato de la API no cambia**. Mismo JSON, mismos
+campos, mismos endpoints (y algunos nuevos).
 
-### Dentro del alcance
+> 🤔 **¿Qué descubriste en el Módulo 02?** Que el `main.py` de casi 300 líneas
+> mezclaba todo: validación, SQL, reglas y HTTP. Hoy vas a separar ese caos.
 
-- Backend organizado en 3 capas: `controllers/`, `services/`, `repositories/`
-- Modelo de datos con **SQLModel** (ORM), que reemplaza el `schema.sql` manual
-- CRUD completo: listar, crear, leer una, actualizar (título y/o estado) y eliminar
-- Inyección de dependencias con `Depends()` de FastAPI (Session → Repository → Service)
-- Frontend **React + Vite + TypeScript** con tipos que reflejan el contrato de la API
-- Health check que consulta la base a través de las capas
+---
 
-### Fuera del alcance (módulos futuros)
+## 2. Por qué lo construimos así (la idea de fondo)
 
-- Migraciones formales con Alembic (este módulo usa `SQLModel.metadata.create_all`)
-- Autenticación JWT / RBAC
-- Testing automatizado con pytest (se deja la base sentada para el módulo de testing)
-- Dockerización del backend
+Cuando todo vive en un solo archivo, **cambiar una cosa obliga a tocar cosas
+que no tienen nada que ver**. La solución es separar por **responsabilidades**:
 
-## 3. Requisitos Funcionales
+```
+Controller ──► Service ──► Repository ──► Base de datos
+  (HTTP)        (negocio)     (ORM/SQL)
+```
 
-| ID | Requisito |
-|----|-----------|
-| RF-01 | `GET /api/tasks` lista todas las tareas ordenadas por `id` |
-| RF-02 | `POST /api/tasks` crea una tarea; el `id` y `created_at` los genera la base, `completed` arranca en `false` |
-| RF-03 | `GET /api/tasks/{id}` devuelve UNA tarea; 404 si no existe |
-| RF-04 | `PATCH /api/tasks/{id}` actualiza `title` y/o `completed` (parcial); 404 si no existe |
-| RF-05 | `DELETE /api/tasks/{id}` elimina la tarea; `{ "ok": true }` si existía, 404 si no |
-| RF-06 | `GET /api/health` reporta `db: "conectada"` y el conteo de tareas |
-| RF-07 | El frontend TypeScript consume el CRUD completo (crear, listar, editar, toggle, eliminar) |
+**La regla de oro**: una capa solo conoce a la que está **debajo**. Nunca hacia
+arriba ni en diagonal.
 
-## 4. Requisitos No Funcionales
+> 💡 **Pista para el taller**: cuando no sepas dónde va algo, preguntate *"¿esto
+> es HTTP, es negocio, o es datos?"*. El `404` es HTTP → controller. El `strip()`
+> del título es negocio → service. El `SELECT` es datos → repository.
 
-| ID | Requisito |
-|----|-----------|
-| RNF-01 | **Mantenibilidad**: cada archivo tiene UNA responsabilidad (separación por capas) |
-| RNF-02 | **Testeabilidad**: las capas son intercambiables vía inyección de dependencias |
-| RNF-03 | **Seguridad**: sin SQL concatenado — el ORM parametriza las consultas automáticamente |
-| RNF-04 | **Compatibilidad**: mismo contrato JSON que los módulos anteriores (`id`, `title`, `completed`, `created_at` ISO 8601) |
-| RNF-05 | **Configurabilidad**: `DATABASE_URL` por `.env`, sin credenciales en el código |
-| RNF-06 | **Tipado estático (frontend)**: TypeScript con `strict: true` |
+---
 
-## 5. Modelo de Datos (SQLModel)
+## 3. Qué tenés que completar (tu misión)
+
+El repo te entrega el backend **casi listo**. Solo tenés que escribir **3
+archivos**, que son justamente las 3 capas:
+
+| Archivo | Capa | Qué hacés |
+|---------|------|-----------|
+| `backend/app/repositories/task_repository.py` | Repository | Los 6 métodos del CRUD con el ORM |
+| `backend/app/services/task_service.py` | Service | La lógica de negocio |
+| `backend/app/controllers/task_controller.py` | Controller | Los 5 endpoints HTTP |
+
+Todo lo demás ya viene **dado** (el modelo, la conexión, el cableado, el
+entrypoint y un controller de ejemplo). La guía `GUIA_ALUMNO.md` te lleva
+paso a paso.
+
+> 🎯 **Tu meta**: que al final el CRUD completo funcione por las 3 capas, y el
+> frontend TypeScript haga todo desde la UI.
+
+---
+
+## 4. La arquitectura
+
+### 4.1 Las capas y sus responsabilidades
+
+| Capa | Carpeta | Sabe de… | NO sabe de… |
+|------|---------|----------|-------------|
+| Controller | `controllers/` | HTTP (rutas, status codes, JSON) | SQL, reglas de negocio |
+| Service | `services/` | Reglas de negocio | HTTP, SQL |
+| Repository | `repositories/` | SQL/ORM, la base | HTTP, negocio |
+
+### 4.2 Dónde vive cada responsabilidad
+
+| Responsabilidad | Antes (módulo 02) | Ahora (módulo 03) |
+|-----------------|-------------------|-------------------|
+| Validación (Pydantic) | en el endpoint | `models/task.py` |
+| SQL / acceso a datos | dentro de los endpoints | `repositories/` |
+| Regla de negocio (`strip`, "no existe") | dentro de los endpoints | `services/` |
+| HTTP (rutas, 404, status codes) | mezclado | `controllers/` |
+| Conexión a la base | `pool` arriba del main | `database.py` |
+| Cableado entre capas | implícito | `dependencies.py` |
+
+> 🤔 **¿Qué descubriste acá?** La decisión clave: el `404` NO vive en el
+> service. El service devuelve `None` (o `False`) y **no sabe qué es un status
+> code**. Es el controller quien lo traduce a `404`. ¿Por qué? Porque `404` es
+> una preocupación **HTTP**, y el service no conoce HTTP.
+
+### 4.3 El ORM en la capa de datos
+
+En el módulo 02 escribías el SQL a mano. Ahora el ORM lo escribe por vos:
+
+```python
+# Módulo 02 — SQL crudo
+cur.execute("SELECT id, title, completed, created_at FROM tasks ORDER BY id")
+
+# Módulo 03 — ORM
+statement = select(Task).order_by(Task.id)
+tasks = session.exec(statement).all()
+```
+
+> 💡 **Pista para el taller**: `session.get(Task, id)` es el atajo para "leer
+> una fila por id" (reemplaza al `WHERE id = %s` del módulo 02).
+
+---
+
+## 5. El modelo de datos (SQLModel)
+
+Una clase de Python define la tabla (con `table=True`):
 
 ```python
 class Task(TaskBase, table=True):
@@ -65,80 +120,69 @@ class Task(TaskBase, table=True):
     )
 ```
 
-| Clase | Rol | table=True | Uso |
-|-------|-----|-----------|-----|
-| `TaskBase` | Campos comunes (title) | no | Base de herencia |
-| `Task` | La TABLA (mapea `tasks`) | **sí** | Persistencia (ORM) |
-| `TaskCreate` | Entrada al crear (solo title) | no | `POST` |
-| `TaskUpdate` | Entrada al actualizar (campos opcionales) | no | `PATCH` |
-| `TaskRead` | Salida (tarea completa) | no | `response_model` |
+Y heredando, definimos qué entra y qué sale por la API:
 
-**Decisión**: `created_at` lo genera **la base** (`server_default=func.now()`), manteniendo la lección del Módulo 02 ("la base es la fuente de verdad").
+| Clase | Rol | Uso |
+|-------|-----|-----|
+| `Task` | La TABLA (`table=True`) | Persistencia |
+| `TaskCreate` | Entrada al crear (solo title) | `POST` |
+| `TaskUpdate` | Entrada al actualizar (campos opcionales) | `PATCH` |
+| `TaskRead` | Salida (tarea completa) | `response_model` |
 
-## 6. Arquitectura
+> 🤔 **¿Qué descubriste acá?** Ya no existe `schema.sql`. El ORM genera la
+> tabla desde la clase (`SQLModel.metadata.create_all`). Y `created_at` lo
+> sigue generando **la base** (`server_default=func.now()`), como en el 02.
 
+---
+
+## 6. Los endpoints (el CRUD completo)
+
+| Método | Ruta | Qué hace |
+|--------|------|----------|
+| `GET` | `/api/health` | Verifica que la base responde |
+| `GET` | `/api/tasks` | Lista todas las tareas |
+| `POST` | `/api/tasks` | Crea una tarea (`201`) |
+| `GET` | `/api/tasks/{id}` | Lee UNA tarea |
+| `PATCH` | `/api/tasks/{id}` | Actualiza título y/o estado |
+| `DELETE` | `/api/tasks/{id}` | Elimina una tarea |
+
+**Errores que tenés que respetar:**
+
+| Caso | Código |
+|------|--------|
+| `title` vacío / > 200 / no string / faltante | `422` |
+| GET/PATCH/DELETE de id inexistente | `404` `{"detail": "Tarea {id} no encontrada"}` |
+
+> 💡 **Pista para el taller**: el `POST` devuelve `201`, no `200`. Y el `PATCH`
+> es parcial: podés mandar solo `completed`, solo `title`, o ambos.
+
+---
+
+## 7. Cómo verificar tu trabajo
+
+```bash
+cd backend
+uv sync
+cp .env.example .env        # DATABASE_URL (podés reusar la del módulo 02)
+uv run -m app.main          # http://localhost:8000
 ```
-Frontend (TS) ── HTTP/JSON ──► Controller ──► Service ──► Repository ──► PostgreSQL
-  :5173                         (FastAPI)     (negocio)     (SQLModel)     (Docker/Supabase)
-  tipos = contrato               HTTP          reglas        ORM
-```
 
-### Regla de dependencia (la lección central)
+**Checkpoints** (si los pasás, vas bien):
 
-```
-Controller ──► Service ──► Repository ──► Base de datos
-   (HTTP)        (negocio)     (ORM/SQL)
-```
+1. `/api/health` responde `db: "conectada"`.
+2. `POST` crea una tarea y el `title` sale **sin espacios** (el `strip()` del service).
+3. `PATCH` con solo `completed` no pisa el `title`, y viceversa.
+4. `GET/PATCH/DELETE` de un id inexistente devuelven `404`.
+5. El frontend (`pnpm dev` en `../frontend`) hace el CRUD completo desde la UI.
 
-Cada capa **solo conoce a la que está debajo**. Nunca hacia arriba ni en diagonal.
+> 🎯 **Tu meta final**: el CRUD funciona por las 3 capas, y el frontend
+> TypeScript lo hace todo desde la interfaz.
 
-| Capa | Carpeta | Sabe de… | NO sabe de… |
-|------|---------|----------|-------------|
-| Controller | `controllers/` | HTTP, status codes, rutas | SQL, reglas de negocio |
-| Service | `services/` | reglas de negocio | HTTP, SQL |
-| Repository | `repositories/` | SQL/ORM, la base | HTTP, negocio |
-| Modelos | `models/` | la tabla (SQLModel) | — |
+---
 
-### Dónde vive cada responsabilidad
+## 8. Dónde seguir aprendiendo
 
-| Responsabilidad | Módulo 02 (monolito) | Módulo 03 (capas) |
-|-----------------|---------------------|-------------------|
-| Validación de entrada | Pydantic en el endpoint | `models/task.py` |
-| Acceso a datos (SQL) | dentro de los endpoints | `repositories/task_repository.py` |
-| Regla de negocio (`strip`, "no existe") | dentro de los endpoints | `services/task_service.py` |
-| HTTP (rutas, status codes, 404) | mezclado | `controllers/task_controller.py` |
-| Conexión / engine | arriba del main | `database.py` |
-| Cableado entre capas | implícito | `dependencies.py` |
-
-**Decisión clave**: el `404` vive en el **controller** (es HTTP). El service devuelve `Task | None` (o `bool`) y no conoce qué es un status code.
-
-## 7. Endpoints
-
-### Flujo feliz
-
-| # | Método | Ruta | Body | Respuesta |
-|---|--------|------|------|-----------|
-| 1 | `GET` | `/api/health` | — | `200` `{status, service, db, tasks_count}` |
-| 2 | `GET` | `/api/tasks` | — | `200` `Task[]` |
-| 3 | `POST` | `/api/tasks` | `{"title": "..."}` | `201` `Task` |
-| 4 | `GET` | `/api/tasks/{id}` | — | `200` `Task` |
-| 5 | `PATCH` | `/api/tasks/{id}` | `{"completed": true}` o `{"title": "..."}` | `200` `Task` |
-| 6 | `DELETE` | `/api/tasks/{id}` | — | `200` `{"ok": true}` |
-
-### Errores
-
-| Caso | Código | Body |
-|------|--------|------|
-| `title` vacío / > 200 / no string / faltante | `422` | error Pydantic |
-| GET/PATCH/DELETE de id inexistente | `404` | `{"detail": "Tarea {id} no encontrada"}` |
-| Base caída | `500` | error de conexión |
-
-## 8. Configuración
-
-`.env` (copiado desde `.env.example`), misma `DATABASE_URL` que el Módulo 02. Se puede **reutilizar la base del Módulo 02**: la tabla `tasks` ya existe y el ORM la mapea tal cual (`create_all` es idempotente).
-
-## 9. Verificación
-
-- **Prueba de lógica** (SQLite in-memory): CRUD completo verificado — `strip`, update parcial sin pisar campos, `None`/`False` en ids inexistentes.
-- **Collection Postman**: flujo feliz (6 requests) + casos límite (422/404).
-- **Frontend**: `pnpm dev` contra el backend, CRUD end-to-end con edición de título.
+- `MATERIAL_PREVIO.md` → los conceptos + referencias (bibliografía, docs, videos).
+- `GUIA_ALUMNO.md` → la guía paso a paso con consignas y pistas.
+- `README.md` → instalación y estructura del repo.
+- La **collection Postman** (`postman/`) → para verificar el flujo feliz y los casos límite.
