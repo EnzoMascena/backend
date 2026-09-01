@@ -30,6 +30,7 @@ El **único objetivo** es **formar competencias profesionales** en desarrollo ba
 | 01 | [Mi Primera APP](./01-mi-primera-app/) | ✅ | Taller guiado: API de Tareas + Frontend React en 90 minutos |
 | 02 | [Persistencia con PostgreSQL](./02-persistencia-postgresql/) | ✅ | Datos que sobreviven: psycopg + pool, SQL básico, Docker demo + Supabase. Frontend del 01 reutilizado sin cambios |
 | 03 | [Arquitectura en Capas + ORM](./03-arquitectura-en-capas/) | ✅ | Controller → Service → Repository, SQLModel (ORM), CRUD completo, frontend TypeScript. Taller por grupos en aula invertida |
+| 04 | [Autenticación y Seguridad](./04-autenticacion-seguridad/) | ✅ | Usuarios, register + login, hash Argon2, JWT, sesiones (server-side vs token), SSO vs JWT, seguridad OWASP. Taller por grupos en aula invertida |
 
 ---
 
@@ -39,8 +40,9 @@ El **único objetivo** es **formar competencias profesionales** en desarrollo ba
 - [x] ~~Persistencia con PostgreSQL~~ (módulo 02: conexión, pool, SQL CRUD, schema)
 - [ ] Servidor HTTP desde cero (sin frameworks)
 - [x] ~~Arquitectura en capas completa~~ (módulo 03: Controller → Service → Repository + SQLModel)
+- [x] ~~Autenticación JWT~~ (módulo 04: register + login, hash Argon2, JWT, sesiones, SSO vs JWT, OWASP)
+- [ ] Autorización RBAC (roles y permisos)
 - [ ] Migraciones formales con Alembic
-- [ ] Autenticación JWT + RBAC
 - [ ] Testing automatizado (unitario + integración)
 - [ ] Dockerización y CI/CD (módulo 02 solo usa Docker para el postgres de la demo)
 - [x] ~~Frontend con TypeScript~~ (módulo 03: React-TS con tipos que reflejan el contrato de la API)
