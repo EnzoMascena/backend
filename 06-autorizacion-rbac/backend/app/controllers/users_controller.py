@@ -47,8 +47,11 @@ def get_user(
     user = storage.get_user_by_id(user_id)
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
-    # 🔓 TODO (tenancy): si user.tenant_id != current_user.tenant_id → 403.
-    #    Un admin de Acme NO puede ver a un usuario de Globex.
+    if user.tenent_id != current_user.tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No podes acceder a usuarios de otra empresa"
+        )
     return user
 
 
@@ -66,6 +69,10 @@ def change_role(
     user = storage.get_user_by_id(user_id)
     if user is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
-    # 🔓 TODO (tenancy): si user.tenant_id != current_user.tenant_id → 403.
+    if user.tenant_id != current_user.tenant_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No podes cambiar el rol de usuarios de otra empresa"
+        )
     updated = storage.set_user_role(user_id, body.role)
     return updated
