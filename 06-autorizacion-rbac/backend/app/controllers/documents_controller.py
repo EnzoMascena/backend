@@ -48,7 +48,7 @@ router = APIRouter(prefix="/api", tags=["3 · Documentos"])
 )
 def create_document(
     body: DocumentCreate,
-    current_user: User = Depends(get_current_user),  # 🔓 TODO: Depends(require_scope("write"))
+    current_user: User = Depends(require_scope("write")),
 ):
     """Crea un documento: draft privado a nombre tuyo, en TU empresa.
 
@@ -98,6 +98,13 @@ def get_document(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="No podes acceder a documentos de otra empresa",
         )
+
+    if doc.visibility == "private" and doc.owner_id != current_user.id and current_user.role != Role.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No podés ver este documento",
+        )
+
     return doc
 
 
@@ -105,7 +112,7 @@ def get_document(
 def update_document(
     doc_id: int,
     body: DocumentUpdate,
-    current_user: User = Depends(get_current_user),  # 🔓 TODO: Depends(require_scope("write"))
+    current_user: User = Depends(require_scope("write")),
 ):
     """Edita un documento: solo el DUEÑO o un ADMIN de la empresa."""
     doc = storage.get_document(doc_id)
@@ -129,7 +136,8 @@ def update_document(
 @router.delete("/documents/{doc_id}", response_model=DocumentRead)
 def delete_document(
     doc_id: int,
-    current_user: User = Depends(get_current_user),  # 🔓 TODO: Depends(require_role(Role.ADMIN)) + Depends(require_scope("write"))
+    current_user: User = Depends(require_role(Role.ADMIN)),
+    _scope: User = Depends(require_scope("write")),
 ):
     """Borra un documento: SOLO admin (la matriz exige 403 para editor/viewer)."""
     doc = storage.get_document(doc_id)
@@ -148,7 +156,7 @@ def delete_document(
 @router.post("/documents/{doc_id}/publish", response_model=DocumentRead)
 def publish_document(
     doc_id: int,
-    current_user: User = Depends(get_current_user),  # 🔓 TODO: Depends(require_scope("write"))
+    current_user: User = Depends(require_scope("write")),
 ):
     """Publica un documento: el DUEÑO publica lo suyo; el admin, cualquiera.
 
