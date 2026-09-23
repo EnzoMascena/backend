@@ -107,6 +107,7 @@ def require_role(required: Role) -> Callable:
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="No tenés el rol necesario para esta operación",
             )
+        return current_user
     return checker
 
 
